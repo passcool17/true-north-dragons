@@ -1,7 +1,7 @@
 'use strict';
 // TRUE NORTH DRAGONS — fictional satire. All characters are generic and fictional.
 const C=document.getElementById('c'),X=C.getContext('2d');X.imageSmoothingEnabled=false;
-const W=384,H=216,FLOOR_TOP=128,FLOOR_BOT=206;
+const W=384,H=216,FLOOR_TOP=150,FLOOR_BOT=208;
 function fit(){const s=Math.max(1,Math.min(innerWidth/W,(innerHeight-16)/H));C.style.width=W*s+'px';C.style.height=H*s+'px';}
 addEventListener('resize',fit);fit();
 
@@ -94,7 +94,7 @@ const EN={taxman:{name:'CARBON TAX COLLECTOR',hp:30,spd:.6,dmg:6,pts:100},bureau
 function newPlayer(i){return{id:i,pal:i?PAL.reporter:PAL.trucker,name:i?'REPORTER':'TRUCKER',x:camX+60+i*30,y:160+i*20,z:0,vz:0,face:1,hp:100,lives:3,pose:'idle',anim:0,atk:0,atkType:'',cd:0,hurtT:0,inv:120,flash:0,combo:0,comboT:0,power:0,alive:true,player:true}}
 function newEnemy(t,x,y){const d=EN[t];return{type:t,pal:PAL[t],name:d.name,x,y,z:0,vz:0,face:-1,hp:d.hp,max:d.hp,spd:d.spd,dmg:d.dmg,pts:d.pts,pose:'idle',anim:0,atk:0,cd:60+Math.random()*60,hurtT:0,flash:0,dead:0,knock:0,vx:0,boss:t==='boss',hits:0,think:0,tx:0,ty:0}}
 function startGame(two){twoP=two;score=0;level=0;players=[newPlayer(0)];if(two)players.push(newPlayer(1));startLevel(0);SFX.start();}
-function startLevel(n){level=n;camX=0;camLock=null;waveIdx=0;enemies=[];fx=[];floaters=[];items=LEVELS[n].items.map(([x,k])=>({x,y:150+Math.random()*40,k,taken:0}));players.forEach((p,i)=>{p.x=60+i*30;p.y=160+i*20;p.inv=120;});state='intro';stateT=0;playSong(LEVELS[n].song);}
+function startLevel(n){level=n;camX=0;camLock=null;waveIdx=0;enemies=[];fx=[];floaters=[];items=LEVELS[n].items.map(([x,k])=>({x,y:170+Math.random()*32,k,taken:0}));players.forEach((p,i)=>{p.x=60+i*30;p.y=160+i*20;p.inv=120;});state='intro';stateT=0;playSong(LEVELS[n].song);}
 
 // ---------- UPDATE ----------
 function inp(p,a){return keys['p'+(p.id+1)+a];}
@@ -110,8 +110,8 @@ function updatePlayer(p){
  if(p.cd<=0&&(prs(p,'punch')||prs(p,'kick'))){const k=prs(p,'kick');p.atkType=k?'kick':'punch';p.atk=k?16:11;p.cd=k?14:8;p.pose=p.atkType;(k?SFX.kick:SFX.whiff)();}
 }
 function doHit(p){
- const reach=p.atkType==='kick'?30:24;let any=false;
- for(const e of enemies){if(e.dead||e.hurtT>12)continue;const dx=(e.x-p.x)*p.face;if(dx>-4&&dx<reach&&Math.abs(e.y-p.y)<12){any=true;
+ const reach=p.atkType==='kick'?44:38;let any=false;
+ for(const e of enemies){if(e.dead||e.hurtT>12)continue;const dx=(e.x-p.x)*p.face;if(dx>-4&&dx<reach&&Math.abs(e.y-p.y)<14){any=true;
   p.combo=p.comboT>0?p.combo+1:1;p.comboT=50;const fin=p.combo>=3;let dmg=(p.atkType==='kick'?12:8)*(p.power?2:1)*(fin?1.6:1);
   e.hp-=dmg;e.flash=10;e.hurtT=fin||e.hp<=0?40:16;e.knock=fin||e.hp<=0?1:0;e.vx=p.face*(fin?3:1);if(e.knock){e.vz=3;}e.face=-p.face;shake=fin?6:3;
   score+=10*p.combo;spark(e.x,e.y-26);if(fin){floaters.push({x:e.x,y:e.y-50,t:50,s:'COMBO x'+p.combo+'!',c:'#ff0'});p.combo=0;}
@@ -125,12 +125,12 @@ function updateEnemy(e){
  if(e.dead){e.gone=1;poof(e.x,e.y);return;}
  const live=players.filter(p=>p.alive);if(!live.length)return;
  let t=live.reduce((a,b)=>Math.abs(a.x-e.x)+Math.abs(a.y-e.y)<Math.abs(b.x-e.x)+Math.abs(b.y-e.y)?a:b);
- if(e.atk>0){e.atk--;e.pose=e.atk<12?'punch':'idle';if(e.atk===8){const dx=(t.x-e.x)*e.face;const r=e.boss?36:24;if(dx>-4&&dx<r&&Math.abs(t.y-e.y)<12&&t.inv<=0&&t.hurtT<=0){t.hp-=e.dmg;t.flash=10;t.hurtT=t.hp<=0?60:18;t.inv=t.hp<=0?0:40;t.x-=e.face*-6;shake=4;SFX.hurt();spark(t.x,t.y-26);}}return;}
+ if(e.atk>0){e.atk--;e.pose=e.atk<12?'punch':'idle';if(e.atk===8){const dx=(t.x-e.x)*e.face;const r=e.boss?52:36;if(dx>-4&&dx<r&&Math.abs(t.y-e.y)<12&&t.inv<=0&&t.hurtT<=0){t.hp-=e.dmg;t.flash=10;t.hurtT=t.hp<=0?60:18;t.inv=t.hp<=0?0:40;t.x-=e.face*-6;shake=4;SFX.hurt();spark(t.x,t.y-26);}}return;}
  if(--e.think<=0){e.think=30+Math.random()*40;e.side=t.x<e.x?1:-1;e.ty=(Math.random()-.5)*8;}
- const gx=t.x+e.side*22,gy=t.y+e.ty;const dx=gx-e.x,dy=gy-e.y;e.face=t.x<e.x?-1:1;
+ const gx=t.x+e.side*30,gy=t.y+e.ty;const dx=gx-e.x,dy=gy-e.y;e.face=t.x<e.x?-1:1;
  if(Math.abs(dx)>3||Math.abs(dy)>3){e.x+=Math.sign(dx)*Math.min(Math.abs(dx),e.spd*(e.boss&&e.hp<e.max/2?1.5:1));e.y+=Math.sign(dy)*Math.min(Math.abs(dy),e.spd*.7);e.pose='walk';}else e.pose='idle';
  e.y=Math.max(FLOOR_TOP+8,Math.min(FLOOR_BOT,e.y));
- if(e.cd>0)e.cd--;else if(Math.abs(t.x-e.x)<(e.boss?40:28)&&Math.abs(t.y-e.y)<10){e.atk=24;e.cd=(e.boss?50:80)+Math.random()*60;}
+ if(e.cd>0)e.cd--;else if(Math.abs(t.x-e.x)<(e.boss?56:38)&&Math.abs(t.y-e.y)<10){e.atk=24;e.cd=(e.boss?50:80)+Math.random()*60;}
 }
 function spark(x,y){for(let i=0;i<6;i++)fx.push({x,y,vx:(Math.random()-.5)*4,vy:(Math.random()-.5)*4,t:12,c:i%2?'#ff0':'#fff',s:2});}
 function poof(x,y){for(let i=0;i<14;i++)fx.push({x:x+(Math.random()-.5)*20,y:y-10-Math.random()*25,vx:(Math.random()-.5)*1.2,vy:-Math.random()*.8,t:30+Math.random()*15,c:['#ddd','#bbb','#999'][i%3],s:4+Math.random()*5|0,smoke:1});}
@@ -157,8 +157,8 @@ function update(){
 }
 function stepWorld(){
  players.forEach(updatePlayer);enemies.forEach(updateEnemy);enemies=enemies.filter(e=>!e.gone);
- for(const it of items)if(!it.taken)for(const p of players)if(p.alive&&Math.abs(p.x-it.x)<12&&Math.abs(p.y-it.y)<10){it.taken=1;SFX.pick();if(it.k==='coffee'){p.hp=Math.min(100,p.hp+40);floaters.push({x:it.x,y:it.y-30,t:50,s:'DOUBLE-DOUBLE! +HP',c:'#fc6'})}else{p.power=600;floaters.push({x:it.x,y:it.y-30,t:50,s:'MAPLE POWER!',c:'#f80'})}score+=50;}
- fx.forEach(f=>{f.x+=f.vx;f.y+=f.vy;f.t--;if(f.smoke)f.s+=.1});fx=fx.filter(f=>f.t>0);floaters.forEach(f=>{f.t--;if(!f.fixed)f.y-=.4});floaters=floaters.filter(f=>f.t>0);
+ for(const it of items)if(!it.taken)for(const p of players)if(p.alive&&Math.abs(p.x-it.x)<16&&Math.abs(p.y-it.y)<10){it.taken=1;SFX.pick();if(it.k==='coffee'){p.hp=Math.min(100,p.hp+40);floaters.push({x:it.x,y:it.y-30,t:50,s:'DOUBLE-DOUBLE! +HP',c:'#fc6'})}else{p.power=600;floaters.push({x:it.x,y:it.y-30,t:50,s:'MAPLE POWER!',c:'#f80'})}score+=50;}
+ fx.forEach(f=>{f.x+=f.vx;f.y+=f.vy;f.t--;if(f.smoke)f.s+=.15});fx=fx.filter(f=>f.t>0);floaters.forEach(f=>{f.t--;if(!f.fixed)f.y-=.4});floaters=floaters.filter(f=>f.t>0);
  if(shake>0)shake--;
 }
 const VMSG='THANK YOU! for helping to save Canada!!!\n\nThe carbon tax forms are shredded,\nthe red tape is cut, and free speech\nrings out from coast to coast.\n\nDouble-doubles are on the house!';
@@ -259,7 +259,7 @@ function render(){
   if(state==='victory'){R(24,110,W-48,84,'#000');R(26,112,W-52,80,'#00208a');R(28,114,W-56,76,'#000c40');const s=VMSG.slice(0,typeT).split('\n');s.forEach((l,i)=>text(l,36,118+i*10,i===0?'#ffd800':'#fff',8));}
   else{X.fillStyle='rgba(0,0,0,.7)';X.fillRect(0,0,W,H);text('TO BE CONTINUED...',W/2,90,'#ffd800',18,'center');text('FINAL SCORE '+score,W/2,118,'#fff',9,'center');if(stateT>90&&(tick>>4)%2)text('PRESS START',W/2,150,'#aaa',8,'center');}}
  else{LEVELS[level].bg();items.forEach(drawItem);const all=[...enemies,...players].sort((a,b)=>a.y-b.y);all.forEach(drawEnt);
-  fx.forEach(f=>{X.globalAlpha=f.smoke?Math.min(1,f.t/20):1;R(f.x-camX-f.s/2,f.y-f.s/2,f.s|0,f.s|0,f.c);});X.globalAlpha=1;hud();
+  fx.forEach(f=>{if(f.star)return;X.globalAlpha=f.smoke?Math.min(1,f.t/20):1;R(f.x-camX-f.s/2,f.y-f.s/2,f.s|0,f.s|0,f.c);});X.globalAlpha=1;hud();
   if(state==='intro'){R(0,80,W,30,'rgba(0,0,0,.7)');text(LEVELS[level].name,W/2,90,'#ffd800',10,'center');}
   if(state==='clear'){text(level===1?'THE MEGA-REGULATOR IS DEFEATED!':'STAGE CLEAR!',W/2,86,'#ffd800',12,'center');}
   if(state==='over'){X.fillStyle='rgba(0,0,0,.6)';X.fillRect(0,0,W,H);text('GAME OVER',W/2,84,'#f44',20,'center');if(stateT>90)text('PRESS START',W/2,120,'#fff',8,'center');}}
@@ -269,4 +269,4 @@ function render(){
 let last=performance.now(),acc=0;
 function loop(now){acc+=Math.min(100,now-last);last=now;while(acc>=1000/60){update();acc-=1000/60;}render();requestAnimationFrame(loop);}
 requestAnimationFrame(loop);
-window.__game={get state(){return state},startGame,startLevel:n=>startLevel(n),get players(){return players},get enemies(){return enemies},get camX(){return camX}};
+window.__game={get state(){return state},startGame,startLevel:n=>startLevel(n),get players(){return players},get enemies(){return enemies},get camX(){return camX},win(){state='victory';stateT=0;typeT=0;playSong('win');}};
