@@ -110,12 +110,12 @@ function updatePlayer(p){
  if(p.cd<=0&&(prs(p,'punch')||prs(p,'kick'))){const k=prs(p,'kick');p.atkType=k?'kick':'punch';p.atk=k?16:11;p.cd=k?14:8;p.pose=p.atkType;(k?SFX.kick:SFX.whiff)();}
 }
 function doHit(p){
- const reach=p.atkType==='kick'?44:38;let any=false;
+ const reach=p.atkType==='kick'?56:48;let any=false;
  for(const e of enemies){if(e.dead||e.hurtT>12)continue;const dx=(e.x-p.x)*p.face;if(dx>-4&&dx<reach&&Math.abs(e.y-p.y)<14){any=true;
   p.combo=p.comboT>0?p.combo+1:1;p.comboT=50;const fin=p.combo>=3;let dmg=(p.atkType==='kick'?12:8)*(p.power?2:1)*(fin?1.6:1);
   e.hp-=dmg;e.flash=10;e.hurtT=fin||e.hp<=0?40:16;e.knock=fin||e.hp<=0?1:0;e.vx=p.face*(fin?3:1);if(e.knock){e.vz=3;}e.face=-p.face;shake=fin?6:3;
-  score+=10*p.combo;spark(e.x,e.y-26);if(fin){floaters.push({x:e.x,y:e.y-50,t:50,s:'COMBO x'+p.combo+'!',c:'#ff0'});p.combo=0;}
-  if(e.hp<=0&&!e.dead){e.dead=1;score+=e.pts;floaters.push({x:e.x,y:e.y-44,t:50,s:'+'+e.pts,c:'#fff'});if(e.boss){SFX.boss();}}}}
+  score+=10*p.combo;spark(e.x,e.y-48);if(fin){floaters.push({x:e.x,y:e.y-84,t:50,s:'COMBO x'+p.combo+'!',c:'#ff0'});p.combo=0;}
+  if(e.hp<=0&&!e.dead){e.dead=1;score+=e.pts;floaters.push({x:e.x,y:e.y-80,t:50,s:'+'+e.pts,c:'#fff'});if(e.boss){SFX.boss();}}}}
  if(any)(p.atkType==='kick'?SFX.kick:SFX.hit)();
 }
 function updateEnemy(e){
@@ -125,15 +125,15 @@ function updateEnemy(e){
  if(e.dead){e.gone=1;poof(e.x,e.y);return;}
  const live=players.filter(p=>p.alive);if(!live.length)return;
  let t=live.reduce((a,b)=>Math.abs(a.x-e.x)+Math.abs(a.y-e.y)<Math.abs(b.x-e.x)+Math.abs(b.y-e.y)?a:b);
- if(e.atk>0){e.atk--;e.pose=e.atk<12?'punch':'idle';if(e.atk===8){const dx=(t.x-e.x)*e.face;const r=e.boss?52:36;if(dx>-4&&dx<r&&Math.abs(t.y-e.y)<12&&t.inv<=0&&t.hurtT<=0){t.hp-=e.dmg;t.flash=10;t.hurtT=t.hp<=0?60:18;t.inv=t.hp<=0?0:40;t.x-=e.face*-6;shake=4;SFX.hurt();spark(t.x,t.y-26);}}return;}
+ if(e.atk>0){e.atk--;e.pose=e.atk<12?'punch':'idle';if(e.atk===8){const dx=(t.x-e.x)*e.face;const r=e.boss?66:46;if(dx>-4&&dx<r&&Math.abs(t.y-e.y)<12&&t.inv<=0&&t.hurtT<=0){t.hp-=e.dmg;t.flash=10;t.hurtT=t.hp<=0?60:18;t.inv=t.hp<=0?0:40;t.x-=e.face*-6;shake=4;SFX.hurt();spark(t.x,t.y-48);}}return;}
  if(--e.think<=0){e.think=30+Math.random()*40;e.side=t.x<e.x?1:-1;e.ty=(Math.random()-.5)*8;}
- const gx=t.x+e.side*30,gy=t.y+e.ty;const dx=gx-e.x,dy=gy-e.y;e.face=t.x<e.x?-1:1;
+ const gx=t.x+e.side*44,gy=t.y+e.ty;const dx=gx-e.x,dy=gy-e.y;e.face=t.x<e.x?-1:1;
  if(Math.abs(dx)>3||Math.abs(dy)>3){e.x+=Math.sign(dx)*Math.min(Math.abs(dx),e.spd*(e.boss&&e.hp<e.max/2?1.5:1));e.y+=Math.sign(dy)*Math.min(Math.abs(dy),e.spd*.7);e.pose='walk';}else e.pose='idle';
  e.y=Math.max(FLOOR_TOP+8,Math.min(FLOOR_BOT,e.y));
- if(e.cd>0)e.cd--;else if(Math.abs(t.x-e.x)<(e.boss?56:38)&&Math.abs(t.y-e.y)<10){e.atk=24;e.cd=(e.boss?50:80)+Math.random()*60;}
+ if(e.cd>0)e.cd--;else if(Math.abs(t.x-e.x)<(e.boss?70:48)&&Math.abs(t.y-e.y)<10){e.atk=24;e.cd=(e.boss?50:80)+Math.random()*60;}
 }
 function spark(x,y){for(let i=0;i<6;i++)fx.push({x,y,vx:(Math.random()-.5)*4,vy:(Math.random()-.5)*4,t:12,c:i%2?'#ff0':'#fff',s:2});}
-function poof(x,y){for(let i=0;i<14;i++)fx.push({x:x+(Math.random()-.5)*20,y:y-10-Math.random()*25,vx:(Math.random()-.5)*1.2,vy:-Math.random()*.8,t:30+Math.random()*15,c:['#ddd','#bbb','#999'][i%3],s:4+Math.random()*5|0,smoke:1});}
+function poof(x,y){for(let i=0;i<14;i++)fx.push({x:x+(Math.random()-.5)*40,y:y-10-Math.random()*60,vx:(Math.random()-.5)*1.2,vy:-Math.random()*.8,t:30+Math.random()*15,c:['#ddd','#bbb','#999'][i%3],s:4+Math.random()*5|0,smoke:1});}
 
 function update(){
  tick++;stateT++;
@@ -267,6 +267,6 @@ function render(){
 }
 // fixed timestep loop
 let last=performance.now(),acc=0;
-function loop(now){acc+=Math.min(100,now-last);last=now;while(acc>=1000/60){update();acc-=1000/60;}render();requestAnimationFrame(loop);}
+function loop(now){acc+=Math.min(100,now-last);last=now;while(acc>=1000/60){update();acc-=1000/60;}X.setTransform(2,0,0,2,0,0);X.imageSmoothingEnabled=true;render();requestAnimationFrame(loop);}
 requestAnimationFrame(loop);
-window.__game={get state(){return state},startGame,startLevel:n=>startLevel(n),get players(){return players},get enemies(){return enemies},get camX(){return camX},win(){state='victory';stateT=0;typeT=0;playSong('win');}};
+window.__game={get state(){return state},startGame,startLevel:n=>startLevel(n),get players(){return players},get enemies(){return enemies},get camX(){return camX},boss(){startLevel(1);state='play';camX=1080;waveIdx=3;players.forEach((p,i)=>{p.x=1200+i*20;p.inv=600;});},win(){state='victory';stateT=0;typeT=0;playSong('win');}};
