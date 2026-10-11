@@ -169,7 +169,7 @@ function startStage(n){stage=n;NUKE.broken=0;camX=0;camLock=null;waveIdx=0;enemi
 const inp=(p,a)=>keys['p'+(p.id+1)+a],prs=(p,a)=>pressed['p'+(p.id+1)+a];
 function hurtPlayer(t,dmg,dir,knock){if(t.inv>0||t.hurtT>0||!t.alive||t.z>18||t.spin>0)return false;if(t.marked>0)dmg*=1.25;if(t.H&&t.H.armor)dmg*=t.H.armor;t.frz=0;rumble(t.id,knock?.8:.3,knock?.5:.6,knock?220:90);t.hp-=dmg;stageDmg+=dmg;t.flash=10;knock=knock||t.hp<=0;t.hurtT=knock?70:18;t.knocked=knock;t.inv=0;t.afterHit=knock?0:36;t.x+=dir*(knock?14:6);t.atk=0;t.held=0;t.hits=0;shake=Math.max(shake,knock?7:4);if(knock)hitstop=5;if(isTouch&&navigator.vibrate)try{navigator.vibrate(knock?60:25)}catch(e){}if(t.hp<=0)SFX.death(t.x);else if(knock)SFX.pdown(t.x);else SFX.hurt(t.x);spark(t.x,t.y-48);floaters.push({x:t.x,y:t.y-80,t:30,s:'-'+Math.round(dmg),c:'#f66',small:1});return true;}
 function updatePlayer(p){
- if(!p.alive)return;const H=p.H,f0=p.face;if(p.priv>0)p.priv--;if(p.slowT>0)p.slowT--;if(p.blind>0)p.blind--;
+ if(!p.alive)return;const H=p.H,f0=p.face;if(p.sharp>0){p.sharp--;if(p.sharp%5===0)fx.push({x:p.x+p.face*(26+Math.random()*14),y:p.y-p.z-62-Math.random()*20,vx:0,vy:-.5,t:14,c:p.sharp<120&&(tick>>3)%2?'#fff':'#ffe060',s:2});if(p.sharp===0)floaters.push({x:p.x,y:p.y-95,t:30,s:'FOURCHE ÉMOUSSÉE',c:'#ccc',small:1});}if(p.priv>0)p.priv--;if(p.slowT>0)p.slowT--;if(p.blind>0)p.blind--;
  for(const q of players)if(q!==p&&!q.alive&&q.lives<=0&&Math.abs(q.x-p.x)<32&&Math.abs(q.y-p.y)<18){q.rev=(q.rev||0)+1;if(q.rev>=120){q.alive=true;q.lives=1;q.hp=Math.round(q.maxhp*.5);q.inv=150;q.rev=0;q.hurtT=0;q.held=0;q.frz=0;q.pose='idle';floaters.push({x:q.x,y:q.y-100,t:60,s:'RÉANIMÉ!',c:'#7f7'});SFX.oneup();}}p.anim++;if(p.wcomboT>0)p.wcomboT--;if(p.inv>0)p.inv--;if(p.flash>0)p.flash--;if(p.cd>0)p.cd--;if(p.comboT>0)p.comboT--;else p.combo=0;if(p.power>0)p.power--;if(p.hitsT>0)p.hitsT--;else p.hits=0;if(p.tapT>0)p.tapT--;
  if(p.z>0||p.vz){p.z+=p.vz;p.vz-=.32;if(p.z<=0){p.z=0;p.vz=0;SFX.land(p.x);if(p.atkType==='jkick'){p.atk=0;p.pose='idle';p.atkType='';}if(p.atkType==='pound'){doPound(p);p.atk=8;p.atkType='weapon_end';p.pose='punch';p.cd=16;}}}
  if(p.marked>0)p.marked--;
@@ -203,7 +203,8 @@ function updatePlayer(p){
   const k=prs(p,'kick');
   // pick up a weapon you are standing on
   if(!k){const pk=items.find(it=>it.k==='puck'&&!it.taken&&!(it.z>0)&&Math.abs(it.x-p.x)<18&&Math.abs(it.y-p.y)<12);if(pk){pk.taken=1;projs.push({kind:'puck',owner:p,x:p.x+p.face*16,y:p.y,vx:p.face*8.5,t:0,hit:new Set(),bounced:0});p.atk=12;p.atkType='mic';p.cd=16;p.pose='punch';SFX.kickW(p.x);floaters.push({x:p.x,y:p.y-95,t:30,s:'LANCER FRAPPÉ!',c:'#fff'});return;}}
-  if(!k&&!p.weapon){const wi=items.find(it=>(it.k==='stick'||it.k==='shovel'||it.k==='chair')&&!it.taken&&!(it.z>0)&&Math.abs(it.x-p.x)<18&&Math.abs(it.y-p.y)<12);if(wi){wi.taken=1;p.weapon={k:wi.k,uses:wi.k==='stick'?8:wi.k==='shovel'?5:1};SFX.grab(p.x);floaters.push({x:p.x,y:p.y-95,t:40,s:{stick:'BÂTON DE HOCKEY!',shovel:'PELLE À NEIGE!',chair:'CHAISE!'}[wi.k],c:'#fff'});p.cd=10;return;}}
+  if(!k&&!p.weapon){const wi=items.find(it=>(it.k==='stick'||it.k==='shovel'||it.k==='chair')&&!it.taken&&!(it.z>0)&&Math.abs(it.x-p.x)<18&&Math.abs(it.y-p.y)<12);if(wi&&H.special==='wheat'){wi.taken=1;const re=p.sharp>0;p.sharp=600;SFX.grab(p.x);SFX.shield&&SFX.shield(p.x);floaters.push({x:p.x,y:p.y-95,t:45,s:re?'FOURCHE AIGUISÉE! (+10 s)':'FOURCHE AIGUISÉE!',c:'#ffd800'});for(let i=0;i<12;i++)fx.push({x:p.x+p.face*20,y:p.y-60,vx:(Math.random()-.5)*3,vy:-Math.random()*2.5,t:24,c:'#fff6a0',s:3});p.cd=10;return;}
+  if(wi){wi.taken=1;p.weapon={k:wi.k,uses:wi.k==='stick'?8:wi.k==='shovel'?5:1};SFX.grab(p.x);floaters.push({x:p.x,y:p.y-95,t:40,s:{stick:'BÂTON DE HOCKEY!',shovel:'PELLE À NEIGE!',chair:'CHAISE!'}[wi.k],c:'#fff'});p.cd=10;return;}}
   const g=!k&&enemies.find(e=>!e.dead&&!e.boss&&e.hurtT>0&&!e.knock&&Math.abs(e.x-p.x)<26&&Math.abs(e.y-p.y)<10);
   if(g){p.atkType='throw';p.atk=18;p.cd=20;p.pose='punch';p.grab=g;SFX.grab(g.x);g.x=p.x+p.face*16;return;}
   if(!k&&p.weapon&&(p.weapon.k==='chair'||(dx===-f0&&dx!==0))){if(dx)p.face=dx;throwWeapon(p);return;}
@@ -245,7 +246,7 @@ function damageEnemy(p,e,dmg,heavy){
  if(e.bribeT>0){e.bribeT=0;floaters.push({x:e.x,y:e.y-104,t:30,s:'CORRUPTION STOPPÉE!',c:'#7f7',small:1});}
  e.las=0;e.chT=0;if(e.charging){e.charging=0;e.cd=60;}
  if(e.type==='lob'){if(e.carry){items.push({x:e.x,y:e.y,k:e.carry,taken:0,vz:3,z:0});e.carry=null;}if(e.coins<3&&Math.random()<.4){e.coins++;STATS.loonS++;items.push({x:e.x,y:e.y,k:'loonie',taken:0,vz:3,z:0});}}
- addHit(p);if(p&&p.priv>0)dmg*=.9;if(e.glue>0){dmg*=.3;heavy=false;}
+ addHit(p);if(p&&p.priv>0)dmg*=.9;if(p&&p.sharp>0)dmg*=1.5;if(e.glue>0){dmg*=.3;heavy=false;}
  SFX.grunt(GRUNT[e.type]||e.type,e.x);if(heavy)SFX.crunch(e.x);else SFX.impact(e.x,dmg>=12);e.hp-=dmg;e.flash=10;e.hurtT=heavy||e.hp<=0?44:16;e.knock=(heavy&&!e.boss)||e.hp<=0?1:0;e.vx=p.face*(heavy?5:1.6)*(p.H?p.H.kb:1);if(e.knock&&!e.boss)e.vz=3.2;else if(e.knock)e.vz=1.5;e.face=-p.face;e.atk=0;e.dash=0;
  shake=Math.max(shake,heavy?7:3);hitstop=heavy?7:3;spark(e.x,e.y-48*(e.sc||1));floaters.push({x:e.x+(Math.random()*10-5),y:e.y-90*(e.sc||1),t:28,s:String(Math.round(dmg)),c:heavy?'#ff0':'#fff',small:1});
  if(e.boss&&e.hp>0&&e.hp<e.max*e.nextInv){e.nextInv-=.25;e.invT=70;SFX.shield(e.x);e.hurtT=20;e.knock=0;floaters.push({x:e.x,y:e.y-120,t:50,s:'RÈGLEMENT D\'URGENCE!',c:'#aaf'});}
@@ -271,7 +272,7 @@ function doHit(p){const H=p.H;
  if(p.atkType==='throw'){const g=p.grab;p.grab=null;if(g&&!g.dead){g.x=p.x+p.face*10;g.invT=0;damageEnemy(p,g,22*H.dmg*(p.power?1.6:1),true);g.vx=p.face*6*H.kb;g.vz=4.5;g.thrown=1;SFX.throwW(g.x);if(H.special==='wheat'){floaters.push({x:p.x,y:p.y-100,t:30,s:'BOTTE DE FOIN!',c:'#fd4'});for(let i=0;i<14;i++)fx.push({x:g.x,y:g.y-40,vx:(Math.random()-.5)*4,vy:-Math.random()*3,t:30,c:i%2?'#e8c050':'#c09030',s:3,grav:1});}
    for(const o of enemies)if(o!==g&&!o.dead&&Math.abs(o.y-g.y)<14&&(o.x-p.x)*p.face>0&&Math.abs(o.x-g.x)<60)damageEnemy(p,o,10,true);}return;}
  const jk=p.atkType==='jkick',wp=p.atkType==='weapon'?p.weapon:null,ch=p.atkType==='charge';
- const reach=(jk?52:p.atkType==='kick'?56:wp?(wp.k==='stick'?80:62):ch?56:48)*H.reach,yr=wp?(wp.k==='stick'?20:30):14;let any=false;
+ const reach=(p.sharp>0?1.15:1)*(jk?52:p.atkType==='kick'?56:wp?(wp.k==='stick'?80:62):ch?56:48)*H.reach,yr=wp?(wp.k==='stick'?20:30):14;let any=false;
  if(wp){doWeaponHit(p,wp,reach,yr);return;}
  const nc=p.comboT>0?p.combo+1:1,lau=(H.chain===4&&nc===3)||nc>=H.chain;
  if(H.special==='wheat'&&p.atkType==='punch'&&nc>=H.chain&&!jk&&!ch){fourche(p);return;}
@@ -469,7 +470,7 @@ function drawFighter(f,sx,sy){const c=f.spr,hero=c.startsWith('hero');let fr=fra
  if(f.pose==='walk'&&!hero){by=-Math.abs(Math.sin(f.anim*.3))*2;}else if(f.pose==='idle')sqy=1+Math.sin(f.anim*.08)*.012;
  let flip=hero?f.face<0:f.face>0;const wob=f.type==='chair'&&f.hurtT>0&&!f.knock?Math.sin(f.hurtT*.9)*.12:f.chT>0?Math.sin(f.chT*.8)*.05:0;const air=hero&&f.z>2&&fr==='walk';if(air)sqy=.93;X.save();X.translate(Math.round(sx),Math.round(sy+by));if(air)X.rotate(-f.face*.12);if(wob)X.rotate(wob);X.scale(1,sqy);
  let ox=-w/2;if(fr==='punch'||fr==='kick'||fr==='attack'||fr==='stick'||fr==='shovel'){const iw=SPR[c].idle.width/2*sc;ox=hero?-iw/2:-(w-iw/2);}
- if(f.invT>0&&(tick>>2)%2)X.globalAlpha=.55;if(f.pal)X.filter='hue-rotate(160deg) saturate(1.2)';
+ if(f.invT>0&&(tick>>2)%2)X.globalAlpha=.55;if(f.pal)X.filter='hue-rotate(160deg) saturate(1.2)';if(f.sharp>0)X.filter=(f.pal?'hue-rotate(160deg) ':'')+'drop-shadow(0 0 2px #ffd800) drop-shadow(0 0 4px rgba(255,220,60,.8)) brightness(1.12)';
  if(flip)X.drawImage(flipOf(img),-ox-w,-h,w,h);else X.drawImage(img,ox,-h,w,h);X.filter='none';if(f.flash>0&&(f.flash>>1)%2){X.globalAlpha=.75;if(flip)X.scale(-1,1);X.drawImage(whiteOf(img),ox,-h,w,h);if(flip)X.scale(-1,1);}X.globalAlpha=1; if(f.weapon&&f.pose!=='down'&&f.pose!=='hurt'&&fr!=='stick'&&fr!=='shovel'){const k=f.weapon.k,wind=f.atkType==='weapon'&&f.wwind&&f.atk>0,walkB=fr==='walk'?1:0;
   if(k==='chair'){obj('o_chair',0,-h+10,1,Math.PI*.9+Math.sin(f.anim*.1)*.05,.5,.5);}
   else{X.save();if(k==='stick')X.translate(f.face*13,-h*(.44+walkB*.02));else X.translate(f.face*4,-h*.6);X.scale(-f.face,1);
