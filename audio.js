@@ -18,7 +18,8 @@ function mkGraph(ctx){
  return{ctx,master,music,duck:duckG,sfx,amb,rv,comp};}
 function audio(){
  if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();BUS=mkGraph(AC);}catch(e){return;}}
- if(AC.state==='suspended')AC.resume();
+ if(!AC.__hooked){AC.__hooked=1;AC.addEventListener&&AC.addEventListener('statechange',()=>{if(AC.state==='running'&&typeof MUS!=='undefined'&&MUS.want&&MUS.cur!==MUS.want){const w=MUS.want;MUS.cur=null;playSong(w);}});}
+ if(AC.state!=='running'){try{const p=AC.resume();if(p&&p.then)p.then(()=>{if(typeof MUS!=='undefined'&&MUS.want&&MUS.cur!==MUS.want){MUS.cur=null;playSong(MUS.want);}}).catch(()=>{});}catch(e){}}
  // iOS unlock: play a silent buffer inside the gesture
  if(!audio.unlocked){try{const s=AC.createBufferSource();s.buffer=AC.createBuffer(1,1,22050);s.connect(AC.destination);s.start(0);audio.unlocked=true;}catch(e){}}
 }

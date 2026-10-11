@@ -187,7 +187,7 @@ function musicTick(){if(!BUS||RENDER)return;const c=BUS.ctx,now=c.currentTime;
   while(!P.done&&P.next<now+.14&&P.next<P.stopAt)stepPlayer(P);if(now>P.stopAt||(P.done&&now>P.next+2.5))killPlayer(P,now+.05);}
  MUS.players=MUS.players.filter(p=>!p.killed);}
 setInterval(musicTick,25);
-function playSong(name){if(MUS.cur===name)return;MUS.cur=name;curSong=name;if(!BUS)return;const c=BUS.ctx,now=c.currentTime;
+function playSong(name){MUS.want=name;if(!BUS||!BUS.ctx||(BUS.ctx.state&&BUS.ctx.state!=='running'&&!(typeof OfflineAudioContext!=='undefined'&&BUS.ctx instanceof OfflineAudioContext)))return;if(MUS.cur===name)return;MUS.cur=name;curSong=name;const c=BUS.ctx,now=c.currentTime;
  for(const P of MUS.players)if(!P.killed&&P.stopAt===Infinity){P.out.gain.cancelScheduledValues(now);P.out.gain.setTargetAtTime(0,now,.18);P.stopAt=now+1;}
  if(name&&SONGS[name]){const jingle=SONGS[name].loop===false;const P=mkPlayer(name,c,BUS.music,now+.06,jingle?0:.5);if(P)MUS.players.push(P);}}
 // resume the wanted song once audio gets unlocked by a gesture
