@@ -109,7 +109,7 @@ function newPlayer(i){const r=(i?1-charSel:charSel);const H=HERO[r?'hero2':'hero
 function newEnemy(t,x,y){const d=EN[t],k=(1+.18*stage)*D().hp;return{type:t,spr:d.spr,sc:d.sc,name:d.name,x,y,z:0,vz:0,face:-1,hp:d.hp*k,max:d.hp*k,spd:d.spd*(1+.06*stage)*(1+diffIdx*.08),dmg:d.dmg*(1+.1*stage)*D().dmg,pts:d.pts,pose:'idle',anim:0,atk:0,atkKind:'',cd:40+Math.random()*60,hurtT:0,flash:0,dead:0,knock:0,vx:0,boss:!!d.boss,final:!!d.final,brief:!!d.brief,think:0,ty:0,side:Math.random()<.5?1:-1,special:200,phase:1,invT:0,nextInv:.75,dash:0,block:0,alt:d.fly?34:0,lowT:0,las:0,chT:0,shout:0,bribeT:0,bribeCD:200+Math.random()*200,gold:0,coins:0}}
 let bonusM=null,bonusT=0,bonusDone=false,bonusEnd=0;
 function startBonus(){bonusDone=true;state='bonus';stateT=0;camX=0;camLock=0;enemies=[];items=[];breakables=[];hazards=[];projs=[];fx=[];floaters=[];bonusT=30*60;bonusEnd=0;
- bonusM={x:250,y:182,hp:60,max:60,flash:0,shakeT:0};players.forEach((p,i)=>{p.x=90;p.y=170+i*22;p.hp=Math.max(p.hp,1);});playSong('boss');SFX.stinger();}
+ bonusM={x:250,y:182,hp:60,max:60,flash:0,shakeT:0};players.forEach((p,i)=>{p.x=90;p.y=170+i*22;p.hp=Math.max(p.hp,1);});playSong('bonus');SFX.stinger();}
 function hitBonus(p,reach){const m=bonusM;if(m.hp<=0)return;const dx=(m.x-p.x)*p.face;if(dx>-10&&dx<reach+34&&Math.abs(m.y-p.y)<26){const d=p.atkType==='charge'?6:p.weapon||p.atkType==='kick'||p.atkType==='jkick'?2:1;m.hp-=d;m.flash=6;m.shakeT=8;shake=3;hitstop=2;score+=150*d;SFX.smash('crate',m.x);
   floaters.push({x:m.x+(Math.random()-.5)*40,y:m.y-90,t:26,s:'+'+150*d,c:'#ffd800',small:1});for(let i=0;i<3;i++)fx.push({x:m.x+(Math.random()-.5)*30,y:m.y-60,vx:(Math.random()-.5)*4,vy:-Math.random()*3-1,t:50,img:'p_invoice',sx:0,sy:0,sw:OBJ.p_invoice.width||58,sh:OBJ.p_invoice.height||52,rot:Math.random()*6,vr:(Math.random()-.5)*.3,grav:1,sc:.6,floor:m.y+12});
   if(m.hp<=0){bonusEnd=1;STATS.bonusKO=1;const tb=Math.floor(bonusT/60)*300;score+=10000+tb;shake=14;SFX.crunch(m.x);SFX.clear();for(let i=0;i<10;i++)poof(m.x+(Math.random()-.5)*60,m.y-Math.random()*20);for(let i=0;i<36;i++)fx.push({x:m.x+(Math.random()-.5)*40,y:m.y-60,vx:(Math.random()-.5)*7,vy:-2-Math.random()*5,t:70+Math.random()*30|0,img:'p_invoice',sx:0,sy:0,sw:OBJ.p_invoice.width||58,sh:OBJ.p_invoice.height||52,rot:Math.random()*6,vr:(Math.random()-.5)*.4,grav:1,sc:.8,floor:m.y+10+Math.random()*20});floaters.push({x:m.x,y:m.y-110,t:120,s:'DÉTRUITE! +'+(10000+tb),c:'#ffd800'});}}}
@@ -341,7 +341,7 @@ function update(){
  if(slowmo>0){slowmo--;if(slowmo%3){clr();return;}}
  if(state==='loading'){if(LOAD.done>=LOAD.n||stateT>600){state='intro';stateT=0;introT=0;}}
  else if(state==='intro'){playSong('title');if(stateT%3===0&&introT<INTRO.length){introT++;if(INTRO[introT-1]!==' '&&INTRO[introT-1]!=='\n')SFX.type();}if(stateT>INTRO.length*3+240||(stateT>10&&Object.keys(pressed).length)){state='title';stateT=0;}}
- else if(state==='select'){if(pressed.p1left||pressed.p1right||pressed.p2left||pressed.p2right){charSel=1-charSel;SFX.blip();}if(stateT>15&&(pressed.start||pressed.p1punch)){startGame(twoStart);}}
+ else if(state==='select'){playSong('select');if(pressed.p1left||pressed.p1right||pressed.p2left||pressed.p2right){charSel=1-charSel;SFX.blip();}if(stateT>15&&(pressed.start||pressed.p1punch)){startGame(twoStart);}}
  else if(state==='stats'){if(stateT>60&&pressed.start)endGame();}
  else if(state==='title'){playSong('title');if(pressed.p1up||pressed.p2up){diffIdx=(diffIdx+2)%3;SFX.blip();}if(pressed.p1down||pressed.p2down){diffIdx=(diffIdx+1)%3;SFX.blip();}
   if(stateT>600){state='table';stateT=0;}
@@ -357,22 +357,23 @@ function update(){
   if(pressed.p2punch&&players.length<2){const p=newPlayer(1);p.x=camX+40;players.push(p);floaters.push({x:p.x,y:p.y-90,t:60,s:'2P!',c:'#6cf'})}
   stepWorld();
   const S=STAGES[stage];
+  {const lv=enemies.filter(e=>!e.dead),bs=lv.find(e=>e.boss);setMusicIntensity(bs?.45+(1-Math.max(0,bs.hp)/bs.max)*.55:Math.min(1,lv.length/5)*.75+(players.some(p=>p.alive&&p.hp<35)?.2:0));}
   if(camLock==null&&waveIdx<S.waves.length&&camX>=S.waves[waveIdx].at){const w=S.waves[waveIdx];camLock=camX;goT=0;
    const list=w.e.slice();if(!w.boss)for(let i=0;i<D().extra&&list.length<6;i++)list.push(POOLS[stage][(i+waveIdx)%POOLS[stage].length]);else if(diffIdx>0)list.push(POOLS[stage][0]);
    list.forEach(t=>{if(NEWE.includes(t)&&!SEEN.has(t)){SEEN.add(t);newBan={name:EN[t].name,t:170,spr:EN[t].spr};SFX.stinger&&SFX.stinger();}});list.forEach((t,i)=>{const side=i%2?-1:1,boss=EN[t].boss;enemies.push(newEnemy(t,camX+(boss?W+30:side>0?W+20+i*12:-20-i*12),boss?178:FLOOR_TOP+12+((i*29)%50)))});
-   if(w.boss){SFX.siren();playSong('boss');bannerT=130;bannerName=EN[w.e[0]].name;}waveIdx++;}
-  if(camLock!=null&&enemies.length===0){camLock=null;if(waveIdx>=S.waves.length){state='clear';stateT=0;hazards=[];playSong(null);SFX.clear();
+   if(w.boss){SFX.siren();playSong(EN[w.e[0]].final?'final':'boss');bannerT=130;bannerName=EN[w.e[0]].name;}waveIdx++;}
+  if(camLock!=null&&enemies.length===0){camLock=null;if(waveIdx>=S.waves.length){state='clear';stateT=0;hazards=[];playSong('jclear');
     const tb=Math.max(0,180-Math.floor(stageTime/60))*20,hb=players.reduce((a,p)=>a+(p.alive?Math.max(0,p.hp):0),0)*10,rank=rankOf(),rb={S:5000,A:2500,B:1000,C:0}[rank];tally={tb,hb:Math.round(hb),rank,rb,shown:0,total:Math.round(tb+hb+rb)};}
    else{goT=180;playSong(S.song);SFX.go();}}
   if(camLock==null&&state==='play'){const lead=Math.max(...players.filter(p=>p.alive).map(p=>p.x),0);const target=Math.min(S.len,Math.max(camX,lead-W*.55));camX+=(target-camX)*.1;}
   if(goT>0)goT--;
-  if(players.every(p=>!p.alive)){if(contLeft>0){state='cont';stateT=0;playSong('cont');}else{state='over';stateT=0;playSong(null);SFX.gameover();setAmbience(null);}}
+  if(players.every(p=>!p.alive)){if(contLeft>0){state='cont';stateT=0;playSong('cont');}else{state='over';stateT=0;playSong('jover');setAmbience(null);}}
  }
  else if(state==='clear'){stepWorld();if(stateT===50&&tally)SFX.rank(tally.rank);if(stateT>60&&tally.shown<tally.total){const st=Math.min(tally.total-tally.shown,Math.ceil(tally.total/80)+1);tally.shown+=st;score+=st;if(stateT%3===0)SFX.tally();}
   if(stateT>360||(stateT>140&&pressed.start&&tally.shown>=tally.total)){score+=tally.total-tally.shown;tally.shown=tally.total;if(stage===2&&!bonusDone)startBonus();else if(stage<STAGES.length-1)startStage(stage+1);else{STATS.won=1;state='victory';stateT=0;typeT=0;playSong('win');}}}
  else if(state==='cont'){if(pressed.start){contLeft--;STATS.cont++;players.forEach(p=>{p.alive=true;p.lives=D().lives;p.hp=p.maxhp;p.inv=180;p.hurtT=0;p.held=0;});state='play';playSong(enemies.some(e=>e.boss)?'boss':STAGES[stage].song);SFX.confirm();}
   else if(stateT%60===1)SFX.count(10-Math.floor(stateT/60));
-  else if(stateT>600){state='over';stateT=0;playSong(null);SFX.gameover();setAmbience(null);}}
+  else if(stateT>600){state='over';stateT=0;playSong('jover');setAmbience(null);}}
  else if(state==='victory'){if(stateT%3===0&&typeT<VMSG.length){typeT++;if(VMSG[typeT-1]!==' ')SFX.type();}if(stateT>VMSG.length*3+200||(pressed.start&&typeT>=VMSG.length)){state='tbc';stateT=0;}}
  else if(state==='tbc'||state==='over'){if(stateT>90&&pressed.start){state='stats';stateT=0;SFX.confirm();}}
  clr();

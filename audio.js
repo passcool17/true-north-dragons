@@ -120,34 +120,7 @@ const SFX={
 // wrap: every SFX call no-ops safely when audio is locked/muted
 for(const k in SFX){const f=SFX[k];SFX[k]=function(...a){if(!BUS||muted||VOL.sfx<=0||(RENDER&&!DEMO))return;try{return f.apply(SFX,a);}catch(e){}};}
 
-// ---------- MUSIC (lookahead scheduler; punchier drums + filtered bass) ----------
-const N=n=>440*Math.pow(2,(n-69)/12);
-const BASE={bass:[40,40,52,40,43,43,55,43,38,38,50,38,45,45,57,47],lead:[64,0,67,0,69,71,0,69,67,0,64,0,62,64,0,0,64,0,67,0,69,71,74,0,72,71,69,67,69,0,0,0]};
-const LEAD2=[64,67,71,0,69,67,64,0,62,64,67,69,71,0,69,0,72,71,69,67,64,0,62,0,64,0,67,69,64,0,0,0];
-const DR={a:'K.h.S.h.K.K.S.hh',b:'K.hSK.hSK.hSKKSh',c:'K.h.S.hKK.h.S.Sh',d:'K...K...K...K.S.',e:'K.hhS.hhK.hhS.SS'};
-function mk(tr,bpm,alt,dr,wave){return{bpm,dr:DR[dr],wave,bass:BASE.bass.map(n=>n+tr),lead:(alt?LEAD2:BASE.lead).map(n=>n?n+tr:0)};}
-const SONGS={title:{bpm:132,dr:DR.a,wave:'sawtooth',bass:[45,45,57,45,43,43,55,43,41,41,53,41,43,43,55,47],lead:[69,0,72,74,76,0,74,72,74,0,71,67,69,0,0,0,69,0,72,74,76,79,81,79,77,76,74,72,71,0,0,0]},
- s1:mk(0,140,0,'a','sawtooth'),s2:mk(-2,150,1,'b','square'),s3:mk(3,156,0,'c','sawtooth'),s4:mk(-4,146,1,'e','square'),s5:mk(1,164,1,'b','sawtooth'),
- boss:{bpm:168,dr:DR.e,wave:'sawtooth',bass:[36,36,48,36,37,37,49,37,36,36,48,36,39,39,51,38],lead:[60,63,66,0,60,63,67,0,60,63,66,0,72,71,70,69]},
- win:{bpm:120,dr:DR.d,wave:'square',bass:[48,48,55,55,53,53,55,55,48,48,57,57,53,55,48,0],lead:[72,76,79,84,0,79,81,0,77,81,84,0,79,0,84,0]},
- cont:{bpm:100,dr:'K...............',wave:'square',bass:[45,0,45,0,44,0,44,0,43,0,43,0,42,0,42,0],lead:[69,0,0,0,68,0,0,0,67,0,0,0,66,0,0,0]}};
-function mnote(type,f,t,d,v,o={}){const c=BUS.ctx,os=c.createOscillator(),g=c.createGain();os.type=type;os.frequency.setValueAtTime(f,t);if(o.sl)os.frequency.exponentialRampToValueAtTime(o.sl,t+d);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.004);g.gain.exponentialRampToValueAtTime(.001,t+d);let n=os;
- if(o.lp){const f2=c.createBiquadFilter();f2.type='lowpass';f2.Q.value=o.q||4;f2.frequency.setValueAtTime(o.lp,t);f2.frequency.exponentialRampToValueAtTime(o.lp1||o.lp,t+d);n.connect(f2);n=f2;}
- if(o.pan&&c.createStereoPanner){const p=c.createStereoPanner();p.pan.value=o.pan;n.connect(p);n=p;}n.connect(g);g.connect(BUS.music);os.start(t);os.stop(t+d+.02);}
-function mnoise(t,d,v,ft,f){const c=BUS.ctx,s=c.createBufferSource(),fl=c.createBiquadFilter(),g=c.createGain();s.buffer=NB;fl.type=ft;fl.frequency.value=f;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);s.connect(fl);fl.connect(g);g.connect(BUS.music);s.start(t,Math.random());s.stop(t+d+.02);}
-function playStep(s,i,t){const sp=60/s.bpm/2;const b=s.bass[i%s.bass.length];
- if(b){mnote(s.wave||'sawtooth',N(b),t,sp*.95,.32,{lp:1400,lp1:250,q:6});mnote('triangle',N(b-12),t,sp*.9,.3);}
- const l=s.lead[i%s.lead.length];if(l){mnote('square',N(l),t,sp*1.6,.11,{pan:-.15});mnote('square',N(l)*1.004,t+.012,sp*1.4,.06,{pan:.25});}
- const ch=(s.dr||'')[i%16];
- if(ch==='K'){mnote('sine',150,t,.22,.9,{sl:40});mnoise(t,.02,.25,'highpass',2000);}
- else if(ch==='S'){mnoise(t,.16,.45,'bandpass',1800);mnote('triangle',220,t,.08,.35,{sl:120});}
- if(ch==='h'||i%2===1)mnoise(t,.03,.09,'highpass',7000);}
-function scheduler(){if(!BUS||RENDER)return;BUS.master.gain.value=muted?0:.9;BUS.music.gain.value=VOL.music*.55;BUS.sfx.gain.value=VOL.sfx;BUS.amb.gain.value=VOL.sfx*.35;
- const s=SONGS[curSong];if(!s||typeof paused!=='undefined'&&paused)return;const sp=60/s.bpm/2,c=BUS.ctx;if(nextNote<c.currentTime)nextNote=c.currentTime+.05;
- while(nextNote<c.currentTime+.12){playStep(s,musicStep++,nextNote);nextNote+=sp;}}
-setInterval(scheduler,25);
-function playSong(name){if(curSong===name)return;curSong=name;musicStep=0;nextNote=0;}
-
+// music lives in music.js
 // ---------- AMBIENCE ----------
 function setAmbience(st){if(!BUS)return;if(ambNodes){ambNodes.forEach(n=>{try{n.stop();}catch(e){}});ambNodes=null;}if(st==null||st<0)return;
  const c=BUS.ctx,t=c.currentTime,nodes=[];const src=()=>{const s=c.createBufferSource();s.buffer=NB;s.loop=true;nodes.push(s);return s;};
@@ -167,7 +140,7 @@ async function renderDemo(only){const sr=44100,dur=34,oc=new OfflineAudioContext
   ['spinStart',[200]],['spinHit',[200]],['coffee',[200]],['syrup',[]],['oneup',[]],['coin',[200]],['smash',['crate',200]],['smash',['barrel',200]],['smash',['can',200]],['blip',[]],['confirm',[]],['pause',[]],['stinger',[]],['go',[]],['tick',[5]],['clear',[]],['rank',['S']],['count',[3]],['gameover',[]],['entry',[]],['type',[]],['honk',[200]]];
  if(only)seq.splice(0,seq.length,...seq.filter(x=>only.includes(x[0])));const gap={siren:2.2,ko:2.4,shock:1.4,death:1,clear:1.6,gameover:2,stinger:.9,syrup:.7,oneup:.9,rank:1};let t=.1;
  DEMO=1;for(const[n,a]of seq){SCHED=t;SFX[n](...a);t+=gap[n]||.42;}DEMO=0;
- if(!only){SCHED=t;curSong='s1';const s=SONGS.s1;let tt=t;for(let i=0;i<32&&tt<dur-.3;i++){playStep(s,i,tt);tt+=60/s.bpm/2;}curSong=null;}
+ 
  SCHED=0;const buf=await oc.startRendering();[BUS,AC,voices]=keep;RENDER=0;
  const L=buf.getChannelData(0),R=buf.getChannelData(1),n=L.length,ab=new ArrayBuffer(44+n*4),dv=new DataView(ab);const ws=(o,s)=>{for(let i=0;i<s.length;i++)dv.setUint8(o+i,s.charCodeAt(i));};
  ws(0,'RIFF');dv.setUint32(4,36+n*4,true);ws(8,'WAVEfmt ');dv.setUint32(16,16,true);dv.setUint16(20,1,true);dv.setUint16(22,2,true);dv.setUint32(24,sr,true);dv.setUint32(28,sr*4,true);dv.setUint16(32,4,true);dv.setUint16(34,16,true);ws(36,'data');dv.setUint32(40,n*4,true);
