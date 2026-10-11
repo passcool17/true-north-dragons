@@ -45,7 +45,7 @@ C.addEventListener('pointerdown',e=>{audio();const r=C.getBoundingClientRect(),l
 const LOAD={n:0,done:0};function trackImg(i){LOAD.n++;i.onload=i.onerror=()=>LOAD.done++;return i;}
 const IMG={};['intro','cut1','cut2','cut4','cut5','lock_a','lock_b','war_a','war_b','stage1_a','stage1_b','stage2_a','stage2_b','stage3_a','stage3_b','stage4_a','stage4_b','stage5_a','ending'].forEach(n=>{const i=trackImg(new Image());i.src='assets/'+n+'.jpg';IMG[n]=i;});const LOGO=trackImg(new Image());LOGO.src='assets/logo.png';
 const POSES={hero3:['idle','walk','punch','kick','hit','down','jumpkick','special'],hero1:['idle','walk','punch','kick','hit','down','jumpkick','special','stick','shovel'],hero2:['idle','walk','punch','kick','hit','down','jumpkick','special','stick','shovel']};
-['tax','bur','bot','boss','insp','final','drone','lob','chair','mega','san','qr','snitch','doc','pm','reset','soldier','mech','general','gen','fin','bank','tele','pron','clim'].forEach(c=>POSES[c]=['idle','attack','hit','down']);
+['tax','bur','bot','boss','insp','final','drone','lob','chair','mega','san','qr','snitch','doc','pm','reset','soldier','mech','general','gen','fin','bank','tele','pron','clim','teleM','pronM','climM'].forEach(c=>POSES[c]=['idle','attack','hit','down']);
 const SPR={},WHITE={};for(const c in POSES){SPR[c]={};for(const p of POSES[c]){const i=trackImg(new Image());i.src='assets/sprites/'+c+'_'+p+'.png';SPR[c][p]=i;}}
 const ITEM={};['coffee','syrup','donuts','loonie'].forEach(n=>{const i=new Image();i.src='assets/sprites/item_'+n+'.png';ITEM[n]=i;});
 const FLIP={};function flipOf(img){const k=img.src;if(FLIP[k])return FLIP[k];const o=document.createElement('canvas');o.width=img.width;o.height=img.height;const c=o.getContext('2d');c.translate(img.width,0);c.scale(-1,1);c.drawImage(img,0,0);return FLIP[k]=o;}
@@ -140,7 +140,7 @@ if(!HS.arcade0.some(s=>s[1]>0)){try{HS.arcade0=JSON.parse(localStorage.tndScores
 MODES.forEach(m=>{HS[m]=HS[m].filter(s=>Array.isArray(s)).sort((a,b)=>b[1]-a[1]).slice(0,10);while(HS[m].length<10)HS[m].push(['---',0]);});
 let hiOf=()=>Math.max(...MODES.map(m=>HS[m][0][1]));hi=hiOf();function modeKey(){return gameMode==='survie'?'survie':'arcade'+diffIdx;}
 function newPlayer(i){const hk=SEL[i]||(i?HEROES.find(h=>h!==(players[0]&&players[0].spr||HEROES[charSel])):HEROES[charSel]);const H=HERO[hk];return{score:0,rev:0,pal:i===1&&players[0]&&players[0].spr===hk?1:0,id:i,H,maxhp:H.hp,chargeT:0,dashT:0,tapT:0,tapDir:0,weapon:null,player:true,spr:hk,name:HNAME[hk],x:camX+60+i*30,y:170+i*20,z:0,vz:0,face:1,hp:H.hp,lives:D().lives,pose:'idle',anim:0,atk:0,atkType:'',cd:0,hurtT:0,inv:120,flash:0,combo:0,comboT:0,power:0,alive:true,hits:0,hitsT:0,held:0,spin:0}}
-function newEnemy(t,x,y){const d=EN[t],k=(1+.18*SD())*D().hp*(players.length>1?(d.boss?1.45:1.2):1)*(gameMode==='survie'?survHP():1);return{type:t,spr:d.spr,sc:d.sc,name:d.name,x,y,z:0,vz:0,face:-1,hp:d.hp*k,max:d.hp*k,spd:d.spd*(1+.06*SD())*(1+diffIdx*.08),dmg:d.dmg*(1+.1*SD())*D().dmg,pts:d.pts,pose:'idle',anim:0,atk:0,atkKind:'',cd:40+Math.random()*60,hurtT:0,flash:0,dead:0,knock:0,vx:0,boss:!!d.boss,final:!!d.final,brief:!!d.brief,think:0,ty:0,side:Math.random()<.5?1:-1,special:200,phase:1,invT:0,nextInv:.75,dash:0,block:0,alt:d.fly?34:0,lowT:0,las:0,chT:0,shout:0,bribeT:0,bribeCD:200+Math.random()*200,gold:0,coins:0,doc:!!d.doc,pm:!!d.pm,fin:!!d.fin,bank:!!d.bank,infl:0,reset:!!d.reset,gen:!!d.gen,onfoot:!!d.onfoot,shieldT:0,arm:0,sp2:150}}
+function newEnemy0(t,x,y){const d=EN[t],k=(1+.18*SD())*D().hp*(players.length>1?(d.boss?1.45:1.2):1)*(gameMode==='survie'?survHP():1);return{type:t,spr:d.spr,sc:d.sc,name:d.name,x,y,z:0,vz:0,face:-1,hp:d.hp*k,max:d.hp*k,spd:d.spd*(1+.06*SD())*(1+diffIdx*.08),dmg:d.dmg*(1+.1*SD())*D().dmg,pts:d.pts,pose:'idle',anim:0,atk:0,atkKind:'',cd:40+Math.random()*60,hurtT:0,flash:0,dead:0,knock:0,vx:0,boss:!!d.boss,final:!!d.final,brief:!!d.brief,think:0,ty:0,side:Math.random()<.5?1:-1,special:200,phase:1,invT:0,nextInv:.75,dash:0,block:0,alt:d.fly?34:0,lowT:0,las:0,chT:0,shout:0,bribeT:0,bribeCD:200+Math.random()*200,gold:0,coins:0,doc:!!d.doc,pm:!!d.pm,fin:!!d.fin,bank:!!d.bank,infl:0,reset:!!d.reset,gen:!!d.gen,onfoot:!!d.onfoot,shieldT:0,arm:0,sp2:150}}
 let bonusM=null,bonusT=0,bonusDone=false,bonusEnd=0;
 function startBonus(){bonusDone=true;state='bonus';stateT=0;camX=0;camLock=0;enemies=[];items=[];breakables=[];hazards=[];projs=[];fx=[];floaters=[];bonusT=30*60;bonusEnd=0;
  bonusM={x:250,y:182,hp:60,max:60,flash:0,shakeT:0};players.forEach((p,i)=>{p.x=90;p.y=170+i*22;p.hp=Math.max(p.hp,1);});playSong('bonus');SFX.stinger();}
@@ -840,3 +840,11 @@ function aiFem(e,t){const adx=Math.abs(t.x-e.x),ady=Math.abs(t.y-e.y),tok=!(atta
  if(e.type==='chair'){if(!e.glued&&e.hp<e.max*.7&&Math.random()<.02){e.glued=1;e.glue=180;SFX.stamp(e.x);floaters.push({x:e.x,y:e.y-110,t:50,s:'COLLÉE!',c:'#eef'});return true;}
   if(tok&&adx>60&&adx<230&&ady<16&&Math.random()<.03){e.face=t.x<e.x?-1:1;startAttack(e,'soup');e.cd=(100+Math.random()*60)*D().cd;return true;}}
  return false;}
+
+// male/female variants: never two identical sprites alive at once
+const VARS={insp:[{spr:'tele',name:'LA FONCTIONNAIRE DU TÉLÉTRAVAIL',fem:1},{spr:'teleM',name:'LE FONCTIONNAIRE DU TÉLÉTRAVAIL',fem:0}],
+ bureau:[{spr:'pron',name:'LA GARDIENNE DES PRONOMS',fem:1},{spr:'pronM',name:'LE GARDIEN DES PRONOMS',fem:0}],
+ chair:[{spr:'clim',name:'LA MILITANTE CLIMAT',fem:1},{spr:'climM',name:'LE MILITANT CLIMAT',fem:0}]};
+function newEnemy(t,x,y){const V=VARS[t];if(!V)return newEnemy0(t,x,y);const opts=V.filter(v=>!enemies.some(o=>!o.dead&&o.spr===v.spr));
+ if(!opts.length){const fb=['taxman','lob','bot','snitch'].find(k=>!enemies.some(o=>!o.dead&&o.type===k))||'taxman';return newEnemy0(fb,x,y);}
+ const v=opts[Math.random()*opts.length|0],e=newEnemy0(t,x,y);e.spr=v.spr;e.name=v.name;e.fem=v.fem;return e;}
