@@ -73,6 +73,7 @@ const SFX={
  brief(x){const p=panOf(x);Nz(.25,.3,'bandpass',500,1500,{q:1,pan:p,a:.05});},
  briefHit(x){const p=panOf(x);this.impact(x,1);O('square',J(320),300,.12,.25,{pan:p,lp:900});Nz(.1,.4,'bandpass',1200,800,{q:6,pan:p});},
  stamp(x){const p=panOf(x);O('square',J(900),400,.05,.25,{pan:p});Nz(.05,.5,'highpass',2500,0,{pan:p});O('sine',J(110),40,.3,.9,{pan:p,t:.07});Nz(.25,.7,'lowpass',1200,80,{pan:p,t:.07,dist:1,rev:.3});duck(.55,.3);},
+ shutter(){Nz(.04,.5,'highpass',3000,0,{force:1});O('square',2400,1800,.02,.12,{force:1});setTimeout(()=>{try{Nz(.05,.35,'bandpass',2000,0,{force:1});O('sine',3000,3000,.25,.06,{force:1,rev:.4})}catch(e){}},70);},
  dash(x){const p=panOf(x);O('sawtooth',J(300),1400,.25,.2,{pan:p,lp:3000});Nz(.3,.25,'bandpass',800,3000,{q:2,pan:p,a:.05});},
  swing(x){const p=panOf(x);Nz(.32,.4,'bandpass',300,1600,{q:1.5,pan:p,a:.12});O('triangle',J(180),120,.25,.15,{pan:p});},
  shock(x){const p=panOf(x);O('sine',90,28,1.2,.9,{pan:p,force:1});O('sawtooth',55,30,1,.35,{pan:p,lp:400,dist:1,force:1});Nz(1.4,.6,'lowpass',800,60,{pan:p,a:.02,hold:.3,force:1,rev:.4});duck(.35,1);},
