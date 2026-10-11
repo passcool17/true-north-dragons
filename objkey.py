@@ -5,7 +5,11 @@ from scipy import ndimage as nd
 SHEETS={'weapons':[('w_stick',84),('w_shovel',80),('w_puck',22)],
  'breakables':[('b_crate',54),('b_barrel',58),('b_can',58)],
  'projectiles':[('p_invoice',26),('p_brief',30),('p_mic',34),('p_splinter',42)],
- 'machine':[('machine',210)]}
+ 'machine':[('machine',210)],
+ 'props_new':[('p_directive',26),('p_ice',36),('p_shell',34),('o_phone',22),('p_scrap',34)],
+ 'nuke_button':[('o_nuke',84),('o_nuke_broken',84)]}
+import sys
+if sys.argv[1:]:SHEETS={k:v for k,v in SHEETS.items() if k in sys.argv[1:]}
 for sh,objs in SHEETS.items():
     a=np.asarray(Image.open(f'raw/{sh}.jpg').convert('RGB')).astype(int)
     bgc=np.median(np.r_[a[:8].reshape(-1,3),a[-8:].reshape(-1,3)],axis=0)

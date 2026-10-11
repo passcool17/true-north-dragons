@@ -130,6 +130,7 @@ function setAmbience(st){if(!BUS)return;if(ambNodes){ambNodes.forEach(n=>{try{n.
  if(st===1||st===2){const cr=chain(src(),'bandpass',900,.5,.18);lfo(cr.g.gain,.3,.08,.16);const lo=chain(src(),'lowpass',200,.7,.25);}
  if(st===3){const o=c.createOscillator(),g=c.createGain(),f=c.createBiquadFilter();o.type='sawtooth';o.frequency.value=48;f.type='lowpass';f.frequency.value=180;g.gain.value=.12;o.connect(f);f.connect(g);g.connect(BUS.amb);o.start(t);nodes.push(o);lfo(g.gain,.5,.08,.12);}
  if(st===4){const o=c.createOscillator(),g=c.createGain();o.type='square';o.frequency.value=60;g.gain.value=.025;o.connect(g);g.connect(BUS.amb);o.start(t);nodes.push(o);const o2=c.createOscillator(),g2=c.createGain();o2.type='sine';o2.frequency.value=7200;g2.gain.value=.01;o2.connect(g2);g2.connect(BUS.amb);o2.start(t);nodes.push(o2);const hm=chain(src(),'bandpass',3000,6,.06);lfo(hm.g.gain,2.3,.04,.05);}
+ if(st===5){const r=chain(src(),'lowpass',150,.7,.5);lfo(r.g.gain,.17,.25,.4);const cr=chain(src(),'bandpass',2600,2,.05);lfo(cr.g.gain,2.7,.04,.05);}
  ambNodes=nodes;}
 function setVol(k,v){VOL[k]=Math.max(0,Math.min(1,Math.round(v*10)/10));localStorage[k==='music'?'tndMus':'tndSfx']=VOL[k];}
 

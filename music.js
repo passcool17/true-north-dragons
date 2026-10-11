@@ -30,6 +30,9 @@ const DK={
  intro:{k:'X.......X.......',h:'..x...x...x...x.'},
  build:{k:'X...X...X...X...',s:'........X.X.XXXX',h:'x.x.x.x.x.x.x.x.'},
  tick:{h:'X...x...X...x...',k:'X...............'},
+ war:{k:'X..X..X.X..X..x.',s:'....X.......X...',t:'X.x.X.x.X..xX.xx',h:'x...x...x...x...'},
+ war2:{k:'X.XXX.X.X.XXX.X.',s:'....X.......X.X.',t:'..........xxxXXX',h:'xxxxxxxxxxxxxxxx'},
+ muted:{k:'X......xX.......',s:'....g.......X...',h:'..g...g...g...g.'},
  none:{}};
 const FILL={a:{k:'X...X...X.X.X.X.',s:'....X.X.XgXgXXXX',t:'..........x.x.xx'},b:{k:'X.......X.......',s:'XgXgXgXgXXXXXXXX'},c:{k:'X..X..X.X.X.X.X.',s:'....X..X.XxXXXXX',t:'........xxx.xxx.'},r:{k:'X.x.X.x.',s:'X.X.XXXX',t:'..x.xx..'}};
 // ---------- SONG DATA (original compositions) ----------
@@ -94,6 +97,20 @@ const SONGS={
   a:{bars:8,ch:'Eb Bb Cm Ab Eb Bb Ab Bb',lead:TITLE_A,tr:1,bass:'R...R.5.R...R.5.',dr:'half',arp:'both',fill:'a'},
   b:{bars:8,ch:'B Db Eb Eb B Db Fm Bb',lead:TITLE_B,tr:1,bass:'R.R.O.R.R.R.O.5.',dr:'epic',arp:'pad',fill:'c'},
   o:{bars:4,ch:'Ab Bb Eb Eb',lead:'C6:8 D6:8 | Eb6:16 | .:16 | .:16',bass:'R-------R-------',dr:'half',arp:'pad'}}},
+ lock:{bpm:104,lead:'cold',bass:'slap',swing:.14,order:['i','a','b'],loopFrom:1,secs:{
+  i:{bars:2,ch:'Bm7 Bm7',lead:'',bass:'R...R..O..R.7...',dr:'muted',arp:''},
+  a:{bars:8,ch:'Bm7 Bm7 Gmaj7 F#7 Bm7 Bm7 Em7 F#7',lead:'F#5:4 .:2 D5:2 E5:4 .:4 | F#5:2 A5:2 .:4 B5:6 .:2 | D6:4 C#6:2 B5:2 F#5:8 | E5:4 .:2 F#5:2 A#5:8 | F#5:4 .:2 D5:2 E5:4 .:4 | F#5:2 A5:2 .:4 D6:6 .:2 | E6:4 D6:2 B5:2 G5:4 E5:4 | F#5:12 .:4',bass:'R..R..O.R.7..5..',dr:'funk',arp:'pad',fill:'a'},
+  b:{bars:8,ch:'G A Bm Bm G A F# F#',lead:'B5:2 D6:2 G6:4 F#6:2 E6:2 D6:4 | C#6:2 E6:2 A6:4 G6:2 F#6:2 E6:4 | F#6:6 E6:2 D6:4 B5:4 | B5:16 | B5:2 D6:2 G6:4 F#6:2 E6:2 D6:4 | E6:2 F#6:2 A6:4 B6:4 A6:4 | A#6:8 F#6:4 C#6:4 | F#6:8 .:8',bass:'R.OR.OR.R.OR.O5.',dr:'house',arp:'both',fill:'c',leadSet:'brass'}}},
+ war:{bpm:92,lead:'brass',bass:'synth',swing:0,order:['i','a','b'],loopFrom:1,secs:{
+  i:{bars:4,ch:'Dm Dm Bb A',lead:'D5:16 | F5:16 | Bb5:16 | A5:16',bass:'R---------------',dr:'war',arp:'pad',fill:'b'},
+  a:{bars:8,ch:'Dm Bb F C Dm Bb Gm A',lead:'D5:3 D5:1 F5:4 A5:6 G5:2 | F5:4 D5:4 Bb4:8 | C5:3 C5:1 F5:4 A5:4 C6:4 | G5:12 E5:4 | D5:3 D5:1 F5:4 A5:6 D6:2 | D6:4 C6:4 Bb5:8 | Bb5:4 A5:4 G5:4 D5:4 | E5:8 C#5:8',bass:'R..R..R.R..R..O.',dr:'war',arp:'pad',fill:'c'},
+  b:{bars:8,ch:'Gm Gm Dm Dm Eb F A A',lead:'G5:4 Bb5:4 D6:8 | C6:4 Bb5:4 A5:8 | F5:4 A5:4 D6:6 E6:2 | F6:16 | Eb6:4 D6:4 C6:4 Bb5:4 | F6:4 Eb6:4 D6:4 C6:4 | C#6:8 E6:8 | A6:16',bass:'R.ORR.ORR.ORR.O5',dr:'epic',arp:'both',fill:'b'}}},
+ bossL:{bpm:150,lead:'fm',bass:'synth',swing:0,order:['a','b'],loopFrom:0,secs:{
+  a:{bars:8,ch:'Em Em C B Em Em Am B',lead:'E5:2 E5:2 G5:2 B5:2 E6:4 D#6:4 | C6:2 B5:2 A5:2 G5:2 F#5:8 | E5:2 G5:2 C6:4 B5:2 A5:2 G5:4 | F#5:2 A5:2 B5:4 D#6:8 | E6:2 E6:2 D6:2 B5:2 G5:4 B5:4 | E6:4 G6:4 F#6:4 E6:4 | C6:4 E6:4 A6:4 G6:4 | F#6:8 D#6:8',bass:'RRORRORRRRORR5O7',dr:'boss',arp:'up',fill:'a'},
+  b:{bars:4,ch:'C D Em Em',lead:'G6:4 E6:4 C6:8 | A6:4 F#6:4 D6:8 | B6:16 | .:16',bass:'R.ORR.ORR.ORR.O5',dr:'drive',arp:'pad',fill:'c',leadSet:'brass'}}},
+ bossW:{bpm:156,lead:'brass',bass:'synth',swing:0,order:['a','b'],loopFrom:0,secs:{
+  a:{bars:8,ch:'Cm Cm Ab Bb Cm Cm Fm G',lead:'C5:2 Eb5:2 G5:2 C6:2 Bb5:2 G5:2 Ab5:4 | G5:4 Eb5:4 C5:8 | Ab5:2 C6:2 Eb6:4 D6:2 C6:2 Bb5:4 | Bb5:2 D6:2 F6:4 D6:8 | C6:2 Eb6:2 G6:2 C7:2 Bb6:2 G6:2 Ab6:4 | G6:4 Eb6:4 C6:8 | F6:4 Ab6:4 G6:4 F6:4 | D6:8 B5:8',bass:'RRORRORRRRORR7O5',dr:'war2',arp:'up',fill:'a'},
+  b:{bars:8,ch:'Ab Bb Cm Cm Ab Bb G G',lead:'C6:8 Eb6:8 | D6:8 F6:8 | G6:16 | G6:4 F6:4 Eb6:4 D6:4 | C6:8 Eb6:8 | F6:8 Ab6:8 | B6:16 | G6:16',bass:'R.ORR.ORR.ORR.O5',dr:'epic',arp:'both',fill:'c',leadSet:'fm'}}},
  // ---- jingles (no loop) ----
  jclear:{bpm:150,lead:'brass',bass:'synth',loop:false,order:['a'],secs:{a:{bars:3,ch:'C F,G C',lead:'C5:2 E5:2 G5:2 C6:2 E6:2 C6:2 G5:2 E5:2 | F5:2 A5:2 C6:4 G5:2 B5:2 D6:4 | C6:12 .:4',bass:'R.O.R.O.R.O.R.O.',dr:'house',arp:'up',crashEnd:1}}},
  jover:{bpm:80,lead:'cold',bass:'round',loop:false,order:['a'],secs:{a:{bars:3,ch:'Am,G F,E Am',lead:'E5:4 D5:4 C5:4 B4:4 | A4:4 G4:4 F4:4 G#4:4 | A4:14 .:2',bass:'R---R---R---R---',dr:'half',arp:'pad'}}},
