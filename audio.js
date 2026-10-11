@@ -53,9 +53,19 @@ const SFX={
  land(x){Nz(.08,.25,'lowpass',600,120,{pan:panOf(x)});},
  jkick(x){this.whoosh(x,1);O('square',J(500),900,.08,.08,{pan:panOf(x)});},
  // --- enemies ---
+ buzz(x){const p=panOf(x);O('sawtooth',J(150),160,.35,.05,{pan:p,vib:38,lp:900});O('square',J(300),310,.3,.025,{pan:p,vib:45,lp:1400});},
+ laserCharge(x){const p=panOf(x);O('sine',300,1800,.6,.08,{pan:p,vib:20});O('square',600,2400,.6,.03,{pan:p,lp:3000});},
+ laser(x){const p=panOf(x);O('sawtooth',J(2200),180,.28,.22,{pan:p,dist:1,lp:5000});O('square',J(1100),90,.25,.15,{pan:p});Nz(.2,.25,'highpass',3000,1500,{pan:p});},
+ coins(x){const p=panOf(x);[0,.05,.1,.16].forEach((t,i)=>O('square',J(1800+i*240,.03),2600+i*200,.08,.09,{pan:p,t}));},
+ spinUp(x){const p=panOf(x);O('triangle',200,900,.6,.12,{pan:p,vib:14});Nz(.6,.15,'bandpass',600,2400,{q:4,pan:p});},
+ vroom(x){const p=panOf(x);O('sawtooth',J(90),220,.5,.3,{pan:p,dist:1,lp:1400,vib:9});Nz(.5,.3,'lowpass',1500,400,{pan:p});},
+ mega(x){const p=panOf(x);O('square',J(420),380,.55,.22,{pan:p,dist:2,lp:2600,vib:7});O('sawtooth',J(210),190,.55,.18,{pan:p,dist:1,lp:1800,vib:6});Nz(.5,.18,'bandpass',1800,1200,{q:2,pan:p});duck(.6,.4);},
  grunt(type,x){const p=panOf(x);
   if(type==='bot'||type==='final'){O('square',J(1800),900,.05,.25,{pan:p,dist:1});Nz(.12,.3,'bandpass',J(3500),1500,{q:8,pan:p});O('sawtooth',J(110),70,.15,.2,{pan:p,lp:900});return;}
-  const base={taxman:260,bureau:190,insp:230,boss:140,boss2:130,bigbur:160,giantinsp:150}[type]||220,f=J(base,.12);
+  if(type==='drone'){O('square',J(2400),1200,.06,.2,{pan:p,dist:1});Nz(.1,.25,'bandpass',J(4000),2000,{q:6,pan:p});return;}
+  if(type==='mega'){O('square',J(330),250,.16,.25,{pan:p,dist:2,lp:2200});return;}
+  if(type==='lob'){O('sawtooth',J(340),520,.12,.22,{pan:p,lp:2000,dist:1});this.coins(x);return;}
+  const base={taxman:260,bureau:190,insp:230,boss:140,boss2:130,bigbur:160,giantinsp:150,chair:150}[type]||220,f=J(base,.12);
   // vocal-ish "ugh": saw through sweeping bandpass (formant) + breath
   O('sawtooth',f,f*.7,.17,.28,{pan:p,lp:J(1400),lp1:500,dist:1});Nz(.12,.12,'bandpass',J(900),500,{q:3,pan:p});},
  fall(x){const p=panOf(x);Nz(.25,.6,'lowpass',900,90,{pan:p});O('sine',J(80),40,.25,.6,{pan:p});Nz(.15,.3,'lowpass',500,100,{pan:p,t:.12});},

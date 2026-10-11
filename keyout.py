@@ -3,10 +3,13 @@ from PIL import Image
 from scipy import ndimage as nd
 import glob,os,json
 H=156  # sprite height at 2x render (36% of 432)
-names={'hero1':['idle','walk','punch','kick','hit','down','jumpkick','special'],'hero2':['idle','walk','punch','kick','hit','down','jumpkick','special'],'insp':['idle','attack','hit'],'final':['idle','attack','hit'],'tax':['idle','attack','hit'],'bur':['idle','attack','hit'],'bot':['idle','attack','hit'],'boss':['idle','attack','hit']}
+names={'hero1':['idle','walk','punch','kick','hit','down','jumpkick','special','stick','shovel'],'hero2':['idle','walk','punch','kick','hit','down','jumpkick','special','stick','shovel'],'drone':['idle','attack','hit'],'lob':['idle','attack','hit'],'chair':['idle','attack','hit'],'mega':['idle','attack','hit'],'insp':['idle','attack','hit'],'final':['idle','attack','hit'],'tax':['idle','attack','hit'],'bur':['idle','attack','hit'],'bot':['idle','attack','hit'],'boss':['idle','attack','hit']}
 meta={}
 # reference scale per character from idle bbox height
+import sys
+only=sys.argv[1:]
 for ch,poses in names.items():
+    if only and ch not in only: continue
     cuts={}
     for p in poses:
         a=np.asarray(Image.open(f'raw/{ch}_{p}.jpg').convert('RGB')).astype(int);R,G,B=a[...,0],a[...,1],a[...,2]
@@ -28,7 +31,7 @@ for ch,poses in names.items():
         out[...,3]=fg*255
         ys,xs=np.where(fg);cuts[p]=(Image.fromarray(out),(xs.min(),ys.min(),xs.max()+1,ys.max()+1))
     ih=cuts['idle'][1][3]-cuts['idle'][1][1]
-    target=H*(1.4 if ch=='boss' else 1.5 if ch=='final' else 1.0)*(0.95 if ch in('tax','bur','bot','insp') else 1)
+    target=H*(1.4 if ch=='boss' else 1.5 if ch=='final' else 1.0)*(0.95 if ch in('tax','bur','bot','insp','lob','mega') else 0.42 if ch=='drone' else 0.8 if ch=='chair' else 1)
     s=target/ih;meta[ch]={}
     for p,(im,bb) in cuts.items():
         c=im.crop(bb);w,h=c.size;c=c.resize((max(1,round(w*s)),max(1,round(h*s))),Image.LANCZOS)
