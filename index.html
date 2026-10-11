@@ -1,16 +1,25 @@
 <!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="TN Dragons"><link rel="apple-touch-icon" href="assets/icon192.png">
 <title>TRUE NORTH DRAGONS</title>
 <style>
-html,body{margin:0;height:100%;background:#000;overflow:hidden;touch-action:none;font-family:monospace;color:#fff}
+html,body{margin:0;height:100%;height:100dvh;width:100%;background:#000;overflow:hidden;overscroll-behavior:none;position:fixed;inset:0;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;font-family:monospace;color:#fff}
 #wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
 canvas{image-rendering:pixelated;image-rendering:crisp-edges;background:#000}
 #touch{position:absolute;inset:0;pointer-events:none;display:none}
 .tb{position:absolute;pointer-events:auto;border:2px solid rgba(255,255,255,.5);background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.28),rgba(255,255,255,.06) 60%,rgba(0,0,0,.25));box-shadow:inset 0 -3px 0 rgba(0,0,0,.35),inset 0 2px 0 rgba(255,255,255,.18),0 0 0 2px rgba(0,0,0,.55);text-shadow:1px 1px 0 #000;opacity:.85;touch-action:none;border-radius:50%;color:#fff;font:bold 16px monospace;display:flex;align-items:center;justify-content:center;user-select:none;-webkit-user-select:none}
-.grp{position:absolute;pointer-events:none}#lc{left:0;bottom:0;width:180px;height:180px;transform-origin:0 100%}#rc{right:0;bottom:0;width:180px;height:230px;transform-origin:100% 100%}#sys{right:0;top:0;width:170px;height:46px;transform-origin:100% 0}
+.grp{position:absolute;pointer-events:none}#lc{left:0;bottom:0;width:180px;height:180px;transform-origin:0 100%}#rc{right:0;bottom:0;width:180px;height:230px;transform-origin:100% 100%}#sys{right:0;top:0;width:216px;height:46px;transform-origin:100% 0}
+.touch #lc{left:env(safe-area-inset-left)}.touch #rc{right:env(safe-area-inset-right)}.touch #sys{top:env(safe-area-inset-top)}.touch .tb{opacity:.6}
+#rot{display:none;position:fixed;inset:0;z-index:20;background:rgba(5,5,15,.94);color:#ffd800;font:bold 18px monospace;text-align:center;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+#rot .ph{width:46px;height:80px;border:4px solid #fff;border-radius:9px;animation:rt 2s ease-in-out infinite}@keyframes rt{0%,25%{transform:rotate(0)}60%,100%{transform:rotate(-90deg)}}
+@media (orientation:portrait){.touch #rot{display:flex}}
+#tip{display:none;position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:21;background:rgba(20,40,120,.95);border:2px solid #ffd800;border-radius:10px;padding:10px 14px;font:bold 13px monospace;color:#fff;text-align:center;max-width:86vw}
 #help{position:absolute;bottom:2px;width:100%;text-align:center;font-size:10px;color:#888;line-height:1.3}
 </style></head><body>
 <div id="wrap"><canvas id="c" width="768" height="432"></canvas></div>
+<div id="rot"><div class="ph"></div><div>TOURNE TON TÉLÉPHONE</div><div style="font-size:12px;color:#ccc">Le jeu se joue à l'horizontale</div></div>
+<div id="tip"></div>
 <div id="touch">
  <div class="grp" id="lc"><div class="tb" id="t-dpad" style="left:16px;bottom:16px;width:148px;height:148px;font-size:12px">◀ ▲ ▼ ▶</div></div>
  <div class="grp" id="rc">
@@ -21,6 +30,7 @@ canvas{image-rendering:pixelated;image-rendering:crisp-edges;background:#000}
  </div>
  <div class="grp" id="sys">
   <div class="tb sm" data-k="start" style="right:8px;top:8px;width:96px;height:32px;border-radius:8px;font-size:12px">DÉMARRER</div>
+  <div class="tb sm" id="t-fs" style="right:168px;top:8px;width:40px;height:32px;border-radius:8px;font-size:16px">⛶</div>
   <div class="tb sm" data-k="pause" style="right:112px;top:8px;width:48px;height:32px;border-radius:8px;font-size:14px">II</div>
  </div>
 </div>

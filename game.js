@@ -5,15 +5,24 @@ const W=384,H=216,FLOOR_TOP=150,FLOOR_BOT=208,OUT='#120a18';
 const TOUCHDEV=('ontouchstart' in window)||navigator.maxTouchPoints>0;let LAYOUT='desk';
 function fit(){const vw=innerWidth,vh=innerHeight,wrap=document.getElementById('wrap'),g=id=>document.getElementById(id);let s;
  if(!TOUCHDEV){s=Math.min(vw/W,(vh-34)/H);wrap.style.alignItems='flex-start';wrap.style.paddingTop='4px';LAYOUT='desk';}
- else if(vh-vw*9/16>=160){// portrait / tablet: game on top, controls below
-  s=Math.min(vw/W,(vh-170)/H);wrap.style.alignItems='flex-start';wrap.style.paddingTop='4px';LAYOUT='below';
-  const cs=Math.max(.6,Math.min(1.15,(vh-H*s-8)/236,vw/2/185));g('lc').style.transform=g('rc').style.transform=`scale(${cs})`;
-  g('sys').style.cssText=`left:50%;right:auto;top:${Math.round(H*s+14)}px;transform-origin:50% 0;transform:translateX(-50%) scale(${Math.min(1,cs)})`;}
- else{// landscape: letterbox the game between side gutters holding the controls
-  const G=Math.max(110,Math.min(190,vw*.18));s=Math.min((vw-2*G)/W,vh/H);wrap.style.alignItems='center';wrap.style.paddingTop='0';LAYOUT='side';
-  const gut=(vw-W*s)/2,cs=Math.min(gut/182,(vh-44)/232,1.2);g('lc').style.transform=g('rc').style.transform=`scale(${cs})`;
-  g('sys').style.cssText=`transform:scale(${Math.min(gut/172,1)})`;}
+ else{// touch: canvas fills the screen (portrait shows the rotate overlay); controls overlay the corners
+  document.documentElement.classList.add('touch');s=Math.min(vw/W,vh/H);wrap.style.alignItems='center';wrap.style.paddingTop='0';LAYOUT=vw>vh?'side':'below';
+  const gut=(vw-W*s)/2,cs=Math.max(.55,Math.min(1.15,vh/380,vw/2/200));g('lc').style.transform=g('rc').style.transform=`scale(${cs})`;
+  g('sys').style.transform=`scale(${Math.min(1,cs)})`;g('touch').style.opacity=gut>150?'1':'.85';}
  C.style.width=W*s+'px';C.style.height=H*s+'px';}
+// ---- fullscreen / orientation (mobile) ----
+const FSAPI=!!(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen);
+const isFS=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
+function goFS(){const d=document.documentElement,rq=d.requestFullscreen||d.webkitRequestFullscreen;if(rq&&!isFS()){try{const p=rq.call(d,{navigationUI:'hide'});if(p&&p.catch)p.catch(()=>{});}catch(e){}}
+ try{if(screen.orientation&&screen.orientation.lock){const p=screen.orientation.lock('landscape');if(p&&p.catch)p.catch(()=>{});}}catch(e){}}
+function exitFS(){try{const ex=document.exitFullscreen||document.webkitExitFullscreen;if(ex&&isFS()){const p=ex.call(document);if(p&&p.catch)p.catch(()=>{});}}catch(e){}}
+const IOS=/iPhone|iPod/.test(navigator.userAgent)||(/iPad|Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1&&!FSAPI);const STANDALONE=navigator.standalone||matchMedia('(display-mode: standalone),(display-mode: fullscreen)').matches;
+function iosTip(force){if(!IOS||STANDALONE)return;let seen=0;try{seen=localStorage.tndTipFS}catch(e){}if(seen&&!force)return;try{localStorage.tndTipFS=1}catch(e){}const t=document.getElementById('tip');t.innerHTML='Pour le plein écran :<br>Partager <b>⎙</b> → <b>Sur l\'écran d\'accueil</b>';t.style.display='block';clearTimeout(iosTip.h);iosTip.h=setTimeout(()=>t.style.display='none',6500);t.onclick=()=>t.style.display='none';}
+function toggleFS(){if(IOS&&!FSAPI){iosTip(true);return;}isFS()?exitFS():goFS();}
+if(TOUCHDEV){let first=true;document.addEventListener('pointerdown',()=>{if(!first)return;first=false;if(FSAPI)goFS();else iosTip();},{capture:true});
+ const fb=document.getElementById('t-fs');if(fb)fb.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();toggleFS();});
+ document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+ ['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>setTimeout(fit,120)));}
 addEventListener('resize',fit);fit();
 
 // ---------- INPUT ----------
@@ -532,7 +541,8 @@ function hud(){
   [['MUSIQUE','music'],['EFFETS','sfx']].forEach(([n,k],i)=>{const y=122+i*20,sel=pauseSel===3+i;text(n,96,y,sel?'#ffd800':'#aaa',8);
    for(let j=0;j<10;j++){const on=j<Math.round(VOL[k]*10);rr(176+j*8,y,6,9,1.5);X.fillStyle=OUT;X.fill();rr(176.5+j*8,y+.5,5,8,1.5);const g=X.createLinearGradient(0,y,0,y+9);g.addColorStop(0,on?(sel?'#fff07a':'#bbb'):'#333');g.addColorStop(1,on?(sel?'#e09000':'#666'):'#1a1a1a');X.fillStyle=g;X.fill();}
    [['−',160,-1],['+',260,1]].forEach(([c,bx,dd])=>{panel(bx-7,y-3,14,14,{r:7,c1:'#3a4a9a',c2:'#141a40',bd:'#9cf',a:1,studs:false});text(c,bx,y-1,'#fff',10,'center');PBTN.push({x:bx-9,y:y-5,w:18,h:18,f:()=>{pauseSel=3+i;setVol(k,VOL[k]+dd*.1);SFX.blip();}});});});
-  text(muted?'SON COUPÉ (M)':(isTouch?'touche un choix':'↑↓ choisir · ←→ volume · J valider · P reprendre'),W/2,170,'#7cf',6,'center');}}
+  if(TOUCHDEV){const fs=isFS();panel(W/2-44,160,88,13,{r:4,c1:'#2a5a9a',c2:'#0a1a40',bd:'#9cf',a:1,studs:false});text(fs?'QUITTER PLEIN ÉCRAN':'⛶ PLEIN ÉCRAN',W/2,163,'#fff',7,'center');PBTN.push({x:W/2-44,y:160,w:88,h:13,f:()=>{toggleFS();SFX.blip();}});}
+  text(muted?'SON COUPÉ (M)':(isTouch?'touche un choix':'↑↓ choisir · ←→ volume · J valider · P reprendre'),W/2,TOUCHDEV?177:170,'#7cf',6,'center');}}
 function pauseAct(i){if(i===0){paused=false;SFX.confirm();}else if(i===1){paused=false;SFX.confirm();const two=players.length>1;startGame(two);}else if(i===2){paused=false;state='title';stateT=100;setAmbience(null);SFX.confirm();}}
 function pauseMenu(){if(pressed.p1up||pressed.p2up){pauseSel=(pauseSel+4)%5;SFX.blip();}if(pressed.p1down||pressed.p2down){pauseSel=(pauseSel+1)%5;SFX.blip();}
  const d=(pressed.p1right||pressed.p2right?1:0)-(pressed.p1left||pressed.p2left?1:0);if(d&&pauseSel>=3){const k=pauseSel===3?'music':'sfx';setVol(k,VOL[k]+d*.1);SFX.blip();}
