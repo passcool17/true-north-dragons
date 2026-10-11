@@ -45,7 +45,7 @@ C.addEventListener('pointerdown',e=>{audio();const r=C.getBoundingClientRect(),l
 const LOAD={n:0,done:0};function trackImg(i){LOAD.n++;i.onload=i.onerror=()=>LOAD.done++;return i;}
 const IMG={};['intro','cut1','cut2','cut4','cut5','lock_a','lock_b','war_a','war_b','stage1_a','stage1_b','stage2_a','stage2_b','stage3_a','stage3_b','stage4_a','stage4_b','stage5_a','ending'].forEach(n=>{const i=trackImg(new Image());i.src='assets/'+n+'.jpg';IMG[n]=i;});const LOGO=trackImg(new Image());LOGO.src='assets/logo.png';
 const POSES={hero3:['idle','walk','punch','kick','hit','down','jumpkick','special'],hero1:['idle','walk','punch','kick','hit','down','jumpkick','special','stick','shovel'],hero2:['idle','walk','punch','kick','hit','down','jumpkick','special','stick','shovel']};
-['tax','bur','bot','boss','insp','final','drone','lob','chair','mega','san','qr','snitch','doc','pm','reset','soldier','mech','general','gen','fin','bank','tele','pron','clim','teleM','pronM','climM'].forEach(c=>POSES[c]=['idle','attack','hit','down']);
+['tax','bur','bot','boss','insp','final','drone','lob','chair','mega','san','qr','snitch','doc','pm','reset','soldier','mech','general','gen','fin','bank','tele','pron','clim','teleM','pronM','climM','snitchM'].forEach(c=>POSES[c]=['idle','attack','hit','down']);
 const SPR={},WHITE={};for(const c in POSES){SPR[c]={};for(const p of POSES[c]){const i=trackImg(new Image());i.src='assets/sprites/'+c+'_'+p+'.png';SPR[c][p]=i;}}
 const ITEM={};['coffee','syrup','donuts','loonie'].forEach(n=>{const i=new Image();i.src='assets/sprites/item_'+n+'.png';ITEM[n]=i;});
 const FLIP={};function flipOf(img){const k=img.src;if(FLIP[k])return FLIP[k];const o=document.createElement('canvas');o.width=img.width;o.height=img.height;const c=o.getContext('2d');c.translate(img.width,0);c.scale(-1,1);c.drawImage(img,0,0);return FLIP[k]=o;}
@@ -99,7 +99,7 @@ const EN={
  final:{spr:'final',name:'LE MINISTÈRE',hp:640,spd:.6,dmg:16,pts:20000,sc:1,boss:1,final:1},
  san:{spr:'san',name:'AGENT SANITAIRE',hp:26,spd:.7,dmg:5,pts:150,sc:1},
  qr:{spr:'qr',name:'INSPECTEUR DU PASSEPORT',hp:30,spd:.6,dmg:5,pts:200,sc:1},
- snitch:{spr:'snitch',name:'MILITANTE',fem:1,hp:16,spd:.95,dmg:4,pts:80,sc:1},
+ snitch:{spr:'snitch',name:'LA MILITANTE AU TÉLÉPHONE',fem:1,hp:16,spd:.95,dmg:4,pts:80,sc:1},
  doc:{spr:'doc',name:'LA DOCTEURE EN CHEF',hp:200,spd:.55,dmg:10,pts:4000,sc:1,boss:1,doc:1},
  pm:{spr:'pm',name:'LE PREMIER MINISTRE SELFIE',hp:250,spd:.7,dmg:11,pts:6000,sc:1,boss:1,pm:1},
  reset:{spr:'reset',name:'LE GRAND RÉINITIALISEUR',hp:230,spd:.45,dmg:11,pts:8000,sc:1,boss:1,reset:1},
@@ -110,10 +110,10 @@ const EN={
  gen:{spr:'gen',name:'LE GÉNÉRAL APOCALYPSE (À PIED)',hp:75,spd:1.05,dmg:9,pts:10000,sc:1.6,boss:1,onfoot:1}};
 const SDT=[0,0,1,2,3,4,4];const SD=()=>SDT[stage]||0;
 function bossSong(t){const d=EN[t];return d.final?'final':d.pm||d.reset?'bossL':d.gen||d.onfoot?'bossW':'boss';}
-const POOLS=[['snitch','san'],['taxman','bureau'],['bureau','bot'],['taxman','bureau','bot','insp'],['insp','taxman'],['bot','bot','bureau'],['soldier','para']];
+const POOLS=[['snitch','insp','bureau','chair','san'],['taxman','bureau'],['bureau','bot'],['taxman','bureau','bot','insp'],['insp','taxman'],['bot','bot','bureau'],['soldier','para']];
 const STAGES=[
  {title:'CONFINEMENT',sub:'RESTEZ CHEZ VOUS... OU PAS !',panels:['lock_a'],arena:{img:'lock_b'},song:'lock',len:2300,snow:0,
-  waves:[{at:150,e:['snitch','snitch','snitch']},{at:450,e:['san','snitch','snitch']},{at:750,e:['qr','san','snitch']},{at:1050,e:['doc','snitch'],boss:1},{at:1400,e:['qr','san','chair','snitch']},{at:1750,e:['san','qr','snitch','snitch']},{at:2050,e:['pm','san'],boss:1},{at:2240,e:['reset'],boss:1}],items:[[300,'coffee'],[600,'stick'],[900,'coffee'],[1150,'syrup'],[1500,'puck'],[1900,'coffee'],[2100,'donuts'],[2250,'coffee']],brk:[[350,'crate'],[800,'can'],[1300,'barrel'],[1700,'crate'],[2050,'can']]},
+  waves:[{at:150,e:['snitch','insp','snitch']},{at:450,e:['san','bureau','snitch']},{at:750,e:['qr','chair','insp']},{at:1050,e:['doc','snitch'],boss:1},{at:1400,e:['qr','san','chair','bureau']},{at:1750,e:['san','insp','snitch','chair','bureau']},{at:2050,e:['pm','san'],boss:1},{at:2240,e:['reset'],boss:1}],items:[[300,'coffee'],[600,'stick'],[900,'coffee'],[1150,'syrup'],[1500,'puck'],[1900,'coffee'],[2100,'donuts'],[2250,'coffee']],brk:[[350,'crate'],[800,'can'],[1300,'barrel'],[1700,'crate'],[2050,'can']]},
  {title:'OTTAWA, LA NUIT',sub:'LE BUDGET EST VIDE... PAS VOS POCHES !',panels:['stage1_a','stage1_b'],song:'s1',len:1700,snow:1,
   waves:[{at:150,e:['taxman','taxman']},{at:500,e:['chair','taxman','taxman']},{at:850,e:['bureau','bureau','taxman']},{at:1200,e:['taxman','chair','bureau','insp']},{at:1600,e:['fin','taxman'],boss:1}],items:[[420,'coffee'],[760,'stick'],[900,'puck'],[1000,'syrup'],[1300,'coffee']],brk:[[330,'crate'],[700,'can'],[1080,'barrel'],[1450,'crate']]},
  {title:'LA COLLINE DU PARLEMENT',sub:'LA PLANCHE À BILLETS TOURNE À PLEIN RÉGIME',panels:['stage2_a','stage2_b'],song:'s2',len:1700,snow:1,
@@ -843,9 +843,10 @@ function aiFem(e,t){const adx=Math.abs(t.x-e.x),ady=Math.abs(t.y-e.y),tok=!(atta
  return false;}
 
 // male/female variants: never two identical sprites alive at once
-const VARS={insp:[{spr:'tele',name:'LA FONCTIONNAIRE DU TÉLÉTRAVAIL',fem:1},{spr:'teleM',name:'LE FONCTIONNAIRE DU TÉLÉTRAVAIL',fem:0}],
+const VARS={snitch:[{spr:'snitch',name:'LA MILITANTE AU TÉLÉPHONE',fem:1},{spr:'snitchM',name:'LE MILITANT AU TÉLÉPHONE',fem:0}],
+ insp:[{spr:'tele',name:'LA FONCTIONNAIRE DU TÉLÉTRAVAIL',fem:1},{spr:'teleM',name:'LE FONCTIONNAIRE DU TÉLÉTRAVAIL',fem:0}],
  bureau:[{spr:'pron',name:'LA GARDIENNE DES PRONOMS',fem:1},{spr:'pronM',name:'LE GARDIEN DES PRONOMS',fem:0}],
  chair:[{spr:'clim',name:'LA MILITANTE CLIMAT',fem:1},{spr:'climM',name:'LE MILITANT CLIMAT',fem:0}]};
 function newEnemy(t,x,y){const V=VARS[t];if(!V)return newEnemy0(t,x,y);const opts=V.filter(v=>!enemies.some(o=>!o.dead&&o.spr===v.spr));
- if(!opts.length){const fb=['taxman','lob','bot','snitch'].find(k=>!enemies.some(o=>!o.dead&&o.type===k))||'taxman';return newEnemy0(fb,x,y);}
+ if(!opts.length){const free=Object.keys(VARS).filter(k=>k!==t&&VARS[k].some(v=>!enemies.some(o=>!o.dead&&o.spr===v.spr)));if(free.length)return newEnemy(free[Math.random()*free.length|0],x,y);const fb=['taxman','lob','bot'].find(k=>!enemies.some(o=>!o.dead&&o.type===k))||'taxman';return newEnemy0(fb,x,y);}
  const v=opts[Math.random()*opts.length|0],e=newEnemy0(t,x,y);e.spr=v.spr;e.name=v.name;e.fem=v.fem;return e;}
