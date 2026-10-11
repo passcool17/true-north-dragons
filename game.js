@@ -114,15 +114,15 @@ const POOLS=[['snitch','san'],['taxman','bureau'],['bureau','bot'],['taxman','bu
 const STAGES=[
  {title:'CONFINEMENT',sub:'RESTEZ CHEZ VOUS... OU PAS !',panels:['lock_a'],arena:{img:'lock_b'},song:'lock',len:2300,snow:0,
   waves:[{at:150,e:['snitch','snitch','snitch']},{at:450,e:['san','snitch','snitch']},{at:750,e:['qr','san','snitch']},{at:1050,e:['doc','snitch'],boss:1},{at:1400,e:['qr','san','chair','snitch']},{at:1750,e:['san','qr','snitch','snitch']},{at:2050,e:['pm','san'],boss:1},{at:2240,e:['reset'],boss:1}],items:[[300,'coffee'],[600,'stick'],[900,'coffee'],[1150,'syrup'],[1500,'puck'],[1900,'coffee'],[2100,'donuts'],[2250,'coffee']],brk:[[350,'crate'],[800,'can'],[1300,'barrel'],[1700,'crate'],[2050,'can']]},
- {title:'OTTAWA, LA NUIT',panels:['stage1_a','stage1_b'],song:'s1',len:1700,snow:1,
+ {title:'OTTAWA, LA NUIT',sub:'LE BUDGET EST VIDE... PAS VOS POCHES !',panels:['stage1_a','stage1_b'],song:'s1',len:1700,snow:1,
   waves:[{at:150,e:['taxman','taxman']},{at:500,e:['chair','taxman','taxman']},{at:850,e:['bureau','bureau','taxman']},{at:1200,e:['taxman','chair','bureau','insp']},{at:1600,e:['fin','taxman'],boss:1}],items:[[420,'coffee'],[760,'stick'],[900,'puck'],[1000,'syrup'],[1300,'coffee']],brk:[[330,'crate'],[700,'can'],[1080,'barrel'],[1450,'crate']]},
- {title:'LA COLLINE DU PARLEMENT',panels:['stage2_a','stage2_b'],song:'s2',len:1700,snow:1,
+ {title:'LA COLLINE DU PARLEMENT',sub:'LA PLANCHE À BILLETS TOURNE À PLEIN RÉGIME',panels:['stage2_a','stage2_b'],song:'s2',len:1700,snow:1,
   waves:[{at:150,e:['bureau','mega','bot']},{at:480,e:['bot','bot','bureau']},{at:820,e:['bot','bureau','mega','taxman']},{at:1150,e:['bot','mega','bot','bureau']},{at:1600,e:['bank','bureau','bot'],boss:1}],items:[[350,'coffee'],[600,'shovel'],[700,'syrup'],[1100,'donuts']],brk:[[300,'can'],[650,'crate'],[1000,'barrel'],[1400,'can']]},
- {title:'LA FRONTIÈRE',panels:['stage3_a','stage3_b'],song:'s3',len:1900,snow:0,
+ {title:'LA FRONTIÈRE',sub:'PERMIS DE PASSER : REFUSÉ',panels:['stage3_a','stage3_b'],song:'s3',len:1900,snow:0,
   waves:[{at:150,e:['taxman','lob','bot','insp']},{at:500,e:['bot','drone','taxman','taxman']},{at:900,e:['insp','lob','drone','bot']},{at:1300,e:['taxman','lob','drone','insp','bot']},{at:1800,e:['giantinsp','bigbur','insp'],boss:1}],items:[[400,'coffee'],[650,'stick'],[800,'syrup'],[1200,'coffee'],[1550,'donuts']],brk:[[320,'barrel'],[700,'crate'],[1100,'barrel'],[1600,'crate']]},
- {title:'LES CHAMPS PÉTROLIFÈRES',panels:['stage4_a','stage4_b'],song:'s4',len:1900,snow:1,
+ {title:'LES CHAMPS PÉTROLIFÈRES',sub:'LE PÉTROLE COULE, LES TAXES AUSSI',panels:['stage4_a','stage4_b'],song:'s4',len:1900,snow:1,
   waves:[{at:150,e:['insp','drone','taxman']},{at:500,e:['insp','chair','taxman']},{at:900,e:['insp','drone','taxman','bureau']},{at:1300,e:['taxman','insp','chair','drone']},{at:1800,e:['boss2','insp','insp'],boss:1}],items:[[350,'coffee'],[600,'shovel'],[750,'syrup'],[1150,'donuts'],[1500,'coffee']],brk:[[300,'barrel'],[680,'barrel'],[1050,'crate'],[1650,'barrel']]},
- {title:'MINISTÈRE DES NOUVELLES APPROUVÉES',panels:['stage5_a'],song:'s5',len:1900,snow:0,
+ {title:'MINISTÈRE DES NOUVELLES APPROUVÉES',sub:'L\'ŒIL VOIT TOUT',panels:['stage5_a'],song:'s5',len:1900,snow:0,
   waves:[{at:150,e:['bot','drone','bot']},{at:500,e:['bot','mega','drone','bot']},{at:900,e:['bot','mega','lob','chair','drone']},{at:1300,e:['drone','mega','lob','chair','bot']},{at:1800,e:['final'],boss:1}],items:[[400,'coffee'],[650,'puck'],[800,'syrup'],[1200,'donuts'],[1600,'coffee']],brk:[[350,'can'],[750,'crate'],[1150,'can'],[1550,'crate']]},
  {title:'TROISIÈME GUERRE MONDIALE',sub:'ARRÊTEZ LE BOUTON ROUGE !',panels:['war_a'],arena:{img:'war_b',last:1},song:'war',len:2300,snow:0,war:1,
   waves:[{at:150,e:['soldier','soldier','drone']},{at:500,e:['para','para','soldier']},{at:850,e:['mech','soldier','soldier']},{at:1250,e:['para','drone','soldier','mech']},{at:1700,e:['mech','para','para','soldier','drone']},{at:2240,e:['general'],boss:1}],items:[[350,'coffee'],[600,'shovel'],[800,'syrup'],[1100,'coffee'],[1500,'donuts'],[1900,'coffee'],[2200,'syrup']],brk:[[300,'barrel'],[700,'crate'],[1050,'barrel'],[1450,'can'],[1850,'barrel']]}];
@@ -203,7 +203,7 @@ function updatePlayer(p){
   const k=prs(p,'kick');
   // pick up a weapon you are standing on
   if(!k){const pk=items.find(it=>it.k==='puck'&&!it.taken&&!(it.z>0)&&Math.abs(it.x-p.x)<18&&Math.abs(it.y-p.y)<12);if(pk){pk.taken=1;projs.push({kind:'puck',owner:p,x:p.x+p.face*16,y:p.y,vx:p.face*8.5,t:0,hit:new Set(),bounced:0});p.atk=12;p.atkType='mic';p.cd=16;p.pose='punch';SFX.kickW(p.x);floaters.push({x:p.x,y:p.y-95,t:30,s:'LANCER FRAPPÉ!',c:'#fff'});return;}}
-  if(!k&&!p.weapon){const wi=items.find(it=>(it.k==='stick'||it.k==='shovel'||it.k==='chair')&&!it.taken&&!(it.z>0)&&Math.abs(it.x-p.x)<18&&Math.abs(it.y-p.y)<12);if(wi){wi.taken=1;p.weapon={k:wi.k,uses:wi.k==='stick'?8:wi.k==='shovel'?5:1};SFX.grab(p.x);floaters.push({x:p.x,y:p.y-95,t:40,s:{stick:'BÂTON DE HOCKEY!',shovel:'PELLE À NEIGE!',chair:'CHAISE DE BUREAU!'}[wi.k],c:'#fff'});p.cd=10;return;}}
+  if(!k&&!p.weapon){const wi=items.find(it=>(it.k==='stick'||it.k==='shovel'||it.k==='chair')&&!it.taken&&!(it.z>0)&&Math.abs(it.x-p.x)<18&&Math.abs(it.y-p.y)<12);if(wi){wi.taken=1;p.weapon={k:wi.k,uses:wi.k==='stick'?8:wi.k==='shovel'?5:1};SFX.grab(p.x);floaters.push({x:p.x,y:p.y-95,t:40,s:{stick:'BÂTON DE HOCKEY!',shovel:'PELLE À NEIGE!',chair:'CHAISE!'}[wi.k],c:'#fff'});p.cd=10;return;}}
   const g=!k&&enemies.find(e=>!e.dead&&!e.boss&&e.hurtT>0&&!e.knock&&Math.abs(e.x-p.x)<26&&Math.abs(e.y-p.y)<10);
   if(g){p.atkType='throw';p.atk=18;p.cd=20;p.pose='punch';p.grab=g;SFX.grab(g.x);g.x=p.x+p.face*16;return;}
   if(!k&&p.weapon&&(p.weapon.k==='chair'||(dx===-f0&&dx!==0))){if(dx)p.face=dx;throwWeapon(p);return;}
@@ -449,7 +449,7 @@ function stepWorld(){
  fx.forEach(f=>{f.x+=f.vx;f.y+=f.vy;if(f.grav)f.vy+=.2;if(f.vr)f.rot+=f.vr;if(f.floor&&f.y>f.floor&&f.vy>0){f.y=f.floor;f.vy*=-.35;f.vx*=.6;f.vr*=.5;}f.t--;if(f.smoke){f.s+=.25;f.vx*=.97;}});fx=fx.filter(f=>f.t>0);if(fx.length>220)fx.splice(0,fx.length-220);floaters.forEach(f=>{f.t--;if(!f.fixed)f.y-=.4});floaters=floaters.filter(f=>f.t>0);
  if(shake>0)shake--;
 }
-const VMSG='VICTOIRE ! Le bouton rouge est brisé.\n\nLes confinements sont levés, les comptes\ndégelés, la Coalition Globale dissoute.\nLe Canada respire enfin : la paix règne\nd\'un océan à l\'autre !\n\nLes double-doubles sont offerts !';
+const VMSG='VICTOIRE ! Le bouton rouge est brisé.\n\nLes confinements sont levés, les comptes\ndégelés, la planche à billets éteinte,\nla Coalition Globale dissoute.\nLe Canada respire enfin : la paix règne\nd\'un océan à l\'autre !\n\nLes double-doubles sont offerts !';
 
 // ---------- RENDER ----------
 // Blended background strips: panels overlap by K device px with a gradient so joins are invisible.
@@ -559,7 +559,7 @@ function drawTitle(){titleBG();
  if(stateT>80){
   text((gameMode==='survie'?'◀ MODE SURVIE ▶':'◀ MODE ARCADE ▶'),W/2,101,gameMode==='survie'?'#f84':'#ffd800',9,'center',OUT);text('DIFFICULTÉ',W/2,113,'#aaa',6,'center');
   DIFFS.forEach((d,i)=>{const y=123+i*12,sel=i===diffIdx;if(sel)panel(W/2-48,y-2,96,11,{r:3,c1:'rgba(50,60,120,.85)',c2:'rgba(0,0,20,.85)',bd:d.col,a:1,studs:false});text((sel?'▶ ':'  ')+d.name+(sel?' ◀':''),W/2,y,sel?d.col:'#777',8,'center');});
-  text(['3 VIES · 3 CONTINUS','2 VIES · 1 CONTINU','1 VIE · 0 CONTINU'][diffIdx],W/2,160,'#ccc',6,'center');
+  text(gameMode==='survie'?'VAGUES INFINIES · MINI-BOSS TOUTES LES 5 VAGUES':['3 VIES · 4 CONTINUS','2 VIES · 1 CONTINU','1 VIE · 0 CONTINU'][diffIdx],W/2,160,'#ccc',6,'center');
   if((tick>>4)%2)text(isTouch?'TOUCHE POUR JOUER':'APPUIE SUR DÉMARRER (ENTRÉE)',W/2,172,'#fff',9,'center');
   if(!isTouch)text('←→ mode · ↑↓ difficulté · , ou manette 2 = 2 JOUEURS',W/2,186,'#7cf',6,'center');
   text('RECORD '+hi+'  ©2026 PASSCOOL STUDIO · SATIRE FICTIVE',W/2,203,'#aaa',6,'center');}}
@@ -598,12 +598,12 @@ function render(){
  drawToast();X.restore();}
 
 // ---------- NEW SCREENS ----------
-const INTRO='CANADA, 2026.\nCONFINEMENTS, PASSEPORTS, DÉLATEURS...\nPUIS LE MINISTÈRE A PRIS LE CONTRÔLE :\nTAXES, PAPERASSE ET CENSURE PARTOUT.\nET LA GUERRE MONDIALE GRONDE...\n\nTROIS HÉROS SE LÈVENT : LE CAMIONNEUR,\nLE REPORTER ET LA FERMIÈRE D\'ALBERTA.\n\nTOUT COMMENCE DANS LES RUES CONFINÉES...';
+const INTRO='CANADA, 2026.\nCONFINEMENTS, PASSEPORTS, MILITANTS PARTOUT...\nBUDGETS VIDES, PLANCHE À BILLETS, INFLATION.\nPUIS LE MINISTÈRE A PRIS LE CONTRÔLE :\nTAXES, PERMIS ET CENSURE.\nET LA GUERRE MONDIALE GRONDE...\n\nTROIS HÉROS SE LÈVENT : LE CAMIONNEUR,\nLE REPORTER ET LA FERMIÈRE D\'ALBERTA.\n\nSEPT MISSIONS. UN SEUL CONVOI.\nTOUT COMMENCE DANS LES RUES CONFINÉES...';
 function drawLoading(){X.fillStyle='#05060f';X.fillRect(0,0,W,H);text('CHARGEMENT...',W/2,88,'#ffd800',10,'center',OUT);const p=LOAD.n?LOAD.done/LOAD.n:0;panel(W/2-86,102,172,16,{r:5,studs:false});bar(W/2-80,106,160,8,p,'#ff6a5a','#a00010','#1a0a0a');text(Math.round(p*100)+'%',W/2,120,'#aaa',7,'center');leafBig(W/2-9,50,2,'#d4202a');}
 function drawIntro(){const img=IMG.intro,t=stateT/60,z=1.12-Math.min(.12,t*.008),pan=Math.min(1,t/20);X.fillStyle='#000';X.fillRect(0,0,W,H);
  if(img.complete&&img.width){const w=W*z,h=H*z;X.globalAlpha=Math.min(1,stateT/60);X.drawImage(img,-(w-W)*pan,-(h-H)*.5,w,h);X.globalAlpha=1;}
  const g=X.createLinearGradient(0,H*.45,0,H);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.85)');X.fillStyle=g;X.fillRect(0,0,W,H);
- const lines=INTRO.slice(0,introT).split('\n');lines.forEach((l,i)=>text(l,20,H-100+i*11,i===0?'#ffd800':'#fff',8,'left',OUT));
+ const lines=INTRO.slice(0,introT).split('\n');lines.forEach((l,i)=>text(l,20,H-8-INTRO.split('\n').length*9+i*9,i===0?'#ffd800':'#fff',8,'left',OUT));
  if((tick>>5)%2)text(isTouch?'TOUCHE POUR PASSER':'UNE TOUCHE POUR PASSER',W-8,6,'#aaa',6,'right');}
 let shineC=null;
 function drawLogo(cx,y,w){if(!LOGO.complete||!LOGO.width)return;const h=w*LOGO.height/LOGO.width;
@@ -742,7 +742,7 @@ function drawEntNew(f,x,al){
  if(f.onfoot&&f.arm>0)bar(x-20,f.y-122,40,4,f.arm/240,'#f44','#a00');}
 function genLegs(f,sx,sy){const k=f.pose==='walk'?Math.sin(f.anim*.3)*5:0;X.fillStyle='#23233a';X.fillRect(sx-15+k,sy-20,12,18);X.fillRect(sx+3-k,sy-20,12,18);X.fillStyle='#b0102a';X.fillRect(sx-15+k,sy-20,2,18);X.fillRect(sx+13-k,sy-20,2,18);X.fillStyle='#111';X.fillRect(sx-17+k,sy-4,15,4);X.fillRect(sx+2-k,sy-4,15,4);}
 function drawNuke(){for(const e of enemies)if(e.reset&&e.px!=null&&!e.dead)obj('o_pedestal',e.px-camX,e.py,1);const S=STAGES[stage];if(!S||!S.war||(gameMode==='survie'&&!enemies.some(e=>e.onfoot||e.gen)))return;const bx=nukeX()-camX;if(bx<-60||bx>W+60)return;shadow(bx,FLOOR_TOP+10,22,5);obj(NUKE.broken?'o_nuke_broken':'o_nuke',bx,FLOOR_TOP+10,1.4,0,.5,1);if(!NUKE.broken&&enemies.some(e=>e.onfoot)&&(tick>>3)%2)text('!',bx,FLOOR_TOP-62,'#f44',14,'center',OUT);}
-const CREDITS=['FIN','','LA PAIX EST SAUVÉE','LE CANADA EST LIBRE !','','TRUE NORTH DRAGONS','','HÉROS :','LE CAMIONNEUR · LE REPORTER','LA FERMIÈRE','','VILAINS (TOUS FICTIFS) :','LA DOCTEURE EN CHEF','LE PREMIER MINISTRE SELFIE','LE GRAND RÉINITIALISEUR','LA VICE-PREMIÈRE MINISTRE DES FINANCES','LE BANQUIER CENTRAL','LE MÉGA-RÉGULATEUR','LE MINISTÈRE','LE GÉNÉRAL APOCALYPSE','','SATIRE POLITIQUE — PERSONNAGES','ET ÉVÉNEMENTS IMAGINAIRES.','TOUTE RESSEMBLANCE SERAIT FORTUITE.','','MERCI D\'AVOIR JOUÉ !'];
+const CREDITS=['FIN','','LA PAIX EST SAUVÉE','LE CANADA EST LIBRE !','','TRUE NORTH DRAGONS','','HÉROS :','LE CAMIONNEUR · LE REPORTER','LA FERMIÈRE','','VILAINS (TOUS FICTIFS) :','LA DOCTEURE EN CHEF','LE PREMIER MINISTRE SELFIE','LE GRAND RÉINITIALISEUR','LA VICE-PREMIÈRE MINISTRE DES FINANCES','LE BANQUIER CENTRAL','LE MÉGA-RÉGULATEUR','LE GRAND INSPECTEUR DES PERMIS','LE MINISTÈRE','LE GÉNÉRAL APOCALYPSE','','ET LEURS TROUPES :','MILITANT·E·S CLIMAT','GARDIEN·NE·S DES PRONOMS','FONCTIONNAIRES DU TÉLÉTRAVAIL','MILITANTE AU TÉLÉPHONE','PERCEPTEURS DE TAXE CARBONE','','SATIRE POLITIQUE — PERSONNAGES','ET ÉVÉNEMENTS IMAGINAIRES.','TOUTE RESSEMBLANCE SERAIT FORTUITE.','','MERCI D\'AVOIR JOUÉ !'];
 function drawCredits(){const y0=H-10-stateT*.35;CREDITS.forEach((l,i)=>{const y=y0+i*13;if(y<6||y>H-34)return;text(l,W/2,y,i===0?'#ffd800':i<4?'#7f7':'#fff',i===0?18:8,'center',OUT);});if(y0+CREDITS.length*13<0)text('FIN',W/2,80,'#ffd800',22,'center',OUT);}
 function nukeX(){if(gameMode==='survie')return (camLock!=null?camLock:camX)+W-40;const S=STAGES[stage];return S.waves[S.waves.length-1].at+W-40;}
 // ===== GAMEPADS (Gamepad API, up to 2 pads: pad 1 -> 1P, pad 2 -> 2P) =====
@@ -807,11 +807,11 @@ function survSpawn(){SURV.phase='fight';const n=SURV.wave,boss=n%5===0,list=[];i
  floaters.push({x:camX+W/2,y:64,t:80,s:'VAGUE '+n+(SURV.mult>1?'   SCORE ×'+SURV.mult:''),c:'#ffd800'});SFX.go();}
 // ===== COMIC CUTSCENES & STORY CARDS =====
 const CUTS={
- 0:{img:'cut1',pan:1,lines:[['NARRATEUR','Ottawa. Les rues sont vides. Les camions, eux, sont pleins.'],['LE CAMIONNEUR','On me dit de rester chez nous ? Ma maison, c\'est mon camion.'],['LE REPORTER','Et moi, je filme tout. En direct. Sans autorisation préalable.'],['LA FERMIÈRE','Moi j\'ai une fourche. Pis j\'ai pas peur de m\'en servir.']]},
+ 0:{img:'cut1',pan:1,lines:[['NARRATEUR','Ottawa. Les rues sont vides. Les camions, eux, sont pleins.'],['LE CAMIONNEUR','On me dit de rester chez nous ? Ma maison, c\'est mon camion.'],['LE REPORTER','Et moi, je filme tout. En direct. Sans autorisation préalable.'],['NARRATEUR','Militantes et militants masqués patrouillent, téléphone à la main.'],['LA FERMIÈRE','Moi j\'ai une fourche. Pis j\'ai pas peur de m\'en servir.']]},
  1:{img:'cut2',pan:-1,lines:[['LE GRAND RÉINITIALISEUR','Ceci n\'est qu\'un report ! Vous ne posséderez rien... même pas ma piste !'],['LA FERMIÈRE','Il se sauve en hélico avec nos taxes carbone dans les poches !'],['NARRATEUR','Ce soir à Ottawa, la Vice-Première ministre des Finances présente son budget. Il est vide.'],['LE CAMIONNEUR','Laisse-le voler. On a la route, nous.']]},
- 2:{bg:2,title:'LA COLLINE DU PARLEMENT',lines:[['NARRATEUR','Sur la Colline, le Banquier central fait tourner la planche à billets.'],['LE REPORTER','Imprimer de l\'argent pour combattre l\'inflation ? Génial.']]},
- 3:{bg:3,title:'LE PONT AMBASSADOR',lines:[['NARRATEUR','La frontière est fermée... sauf pour les formulaires en triple exemplaire.'],['NARRATEUR','Le Méga-Régulateur exige un permis pour passer, respirer et klaxonner.'],['LE CAMIONNEUR','Klaxon prêt. Convoi prêt. Bureaucrates, attachez vos tuques.']]},
- 4:{bg:4,title:'LES CHAMPS PÉTROLIFÈRES',lines:[['LA FERMIÈRE','Chez nous en Alberta, le pétrole coule... et les taxes aussi.'],['NARRATEUR','Ici, l\'Inspecteur géant mesure même la hauteur de ton blé.']]},
+ 2:{bg:2,title:'LA COLLINE DU PARLEMENT',lines:[['NARRATEUR','Sur la Colline, le Banquier central fait tourner la planche à billets.'],['LA FERMIÈRE','Mon sac de semences coûte le prix d\'un tracteur. Merci, l\'inflation.'],['LE REPORTER','Imprimer de l\'argent pour combattre l\'inflation ? Génial.']]},
+ 3:{bg:3,title:'LA FRONTIÈRE',lines:[['NARRATEUR','La frontière est fermée... sauf pour les formulaires en triple exemplaire.'],['NARRATEUR','Le Méga-Régulateur exige un permis pour passer, respirer et klaxonner.'],['LE CAMIONNEUR','Klaxon prêt. Convoi prêt. Gardiens des pronoms, attachez vos tuques.']]},
+ 4:{bg:4,title:'LES CHAMPS PÉTROLIFÈRES',lines:[['LA FERMIÈRE','Chez nous en Alberta, le pétrole coule... et les taxes aussi.'],['NARRATEUR','Les militants climat se collent aux pipelines. Le Grand Inspecteur des permis mesure même la hauteur de ton blé.']]},
  5:{img:'cut4',pan:1,lines:[['NARRATEUR','La tour du Ministère. L\'Œil voit tout. Surtout ce que tu penses.'],['L\'ŒIL','CITOYENS : VOTRE OPINION A ÉTÉ VÉRIFIÉE... ET REFUSÉE.'],['LE REPORTER','Une entrevue exclusive avec un œil géant ? J\'embarque.']]},
  6:{img:'cut5',pan:-1,lines:[['LE GÉNÉRAL APOCALYPSE','Un seul bouton et tout recommence à zéro ! HA HA HA !'],['LE CAMIONNEUR','Pas si on klaxonne avant toi, mon général.'],['NARRATEUR','Dernière mission : empêcher la Troisième Guerre mondiale.']]}};
 let cut=null;
