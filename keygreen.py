@@ -12,7 +12,9 @@ def key(f):
     edge=ndimage.binary_dilation(al<.98,iterations=3)
     lim=np.maximum(r,b);g2=np.where(edge&(g>lim+10),lim+np.minimum(g-lim,25)*.4,g)
     o=np.dstack([r,g2,b,al*255]).astype(np.uint8);im=Image.fromarray(o,'RGBA');return im.crop(im.getbbox())
-for c,hh in [('fin',182),('bank',200)]:
+import sys
+JOBS=[('fin',182),('bank',200),('tele',146),('pron',146),('clim',142)]
+for c,hh in [j for j in JOBS if len(sys.argv)<2 or j[0] in sys.argv[1:]]:
     fr={p:key(f'raw/{c}_{p}.jpg') for p in ['idle','attack','hit']};s=hh/fr['idle'].height
     for p,im in fr.items():im=im.resize((round(im.width*s),round(im.height*s)),Image.LANCZOS);im.save(D+f'{c}_{p}.png');print(c,p,im.size)
     h=Image.open(D+f'{c}_hit.png');dd=h.rotate(-80,expand=True,resample=Image.BICUBIC);dd.crop(dd.getbbox()).save(D+f'{c}_down.png')
