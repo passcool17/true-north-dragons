@@ -6,17 +6,18 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;touch-action:none
 #wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
 canvas{image-rendering:pixelated;image-rendering:crisp-edges;background:#000}
 #touch{position:absolute;inset:0;pointer-events:none;display:none}
-.tb{position:absolute;pointer-events:auto;border:2px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);border-radius:50%;color:#fff;font:bold 16px monospace;display:flex;align-items:center;justify-content:center;user-select:none;-webkit-user-select:none}
+.tb{position:absolute;pointer-events:auto;border:2px solid rgba(255,255,255,.5);background:rgba(255,255,255,.10);opacity:.8;touch-action:none;border-radius:50%;color:#fff;font:bold 16px monospace;display:flex;align-items:center;justify-content:center;user-select:none;-webkit-user-select:none}
 #help{position:absolute;bottom:4px;width:100%;text-align:center;font-size:11px;color:#888}
 </style></head><body>
 <div id="wrap"><canvas id="c" width="768" height="432"></canvas></div>
 <div id="touch">
- <div class="tb" id="t-dpad" style="left:16px;bottom:16px;width:130px;height:130px;font-size:12px">MOVE</div>
- <div class="tb" data-k="p1punch" style="right:90px;bottom:24px;width:64px;height:64px">PUNCH</div>
- <div class="tb" data-k="p1kick" style="right:16px;bottom:70px;width:64px;height:64px">KICK</div>
- <div class="tb" data-k="p1jump" style="right:100px;bottom:100px;width:56px;height:56px;font-size:12px">JUMP</div>
- <div class="tb" data-k="p1special" style="right:170px;bottom:40px;width:56px;height:56px;font-size:10px;border-color:#fa2">SPÉCIAL</div>
- <div class="tb" data-k="start" style="right:16px;top:12px;width:70px;height:34px;border-radius:8px;font-size:12px">START</div>
+ <div class="tb" id="t-dpad" style="left:14px;bottom:14px;width:140px;height:140px;font-size:12px">◀ ▲ ▼ ▶</div>
+ <div class="tb" data-k="p1punch" style="right:22px;bottom:22px;width:84px;height:84px;font-size:13px;border-color:#f66">COUP</div>
+ <div class="tb" data-k="p1kick" style="right:120px;bottom:18px;width:72px;height:72px;font-size:12px;border-color:#6cf">PIED</div>
+ <div class="tb" data-k="p1jump" style="right:108px;bottom:104px;width:66px;height:66px;font-size:11px;border-color:#7f7">SAUT</div>
+ <div class="tb" data-k="p1special" style="right:24px;bottom:122px;width:66px;height:66px;font-size:10px;border-color:#fa2">SPÉCIAL</div>
+ <div class="tb sm" data-k="start" style="right:14px;top:10px;width:74px;height:32px;border-radius:8px;font-size:12px">START</div>
+ <div class="tb sm" data-k="pause" style="right:98px;top:10px;width:46px;height:32px;border-radius:8px;font-size:14px">II</div>
 </div>
 <div id="help">1P: WASD move · J punch · K kick · L jump · I (or J+K) special &nbsp;|&nbsp; 2P: Arrows · , punch · . kick · / jump · ; special (Numpad 1/2/3/0) &nbsp;|&nbsp; Enter start · ↑↓ difficulty · M mute · P pause</div>
 <script src="audio.js"></script><script src="game.js"></script></body></html>

@@ -3,7 +3,7 @@ from PIL import Image
 from scipy import ndimage as nd
 import glob,os,json
 H=156  # sprite height at 2x render (36% of 432)
-names={'hero1':['idle','walk','punch','kick','hit'],'hero2':['idle','walk','punch','kick','hit'],'insp':['idle','attack','hit'],'final':['idle','attack','hit'],'tax':['idle','attack','hit'],'bur':['idle','attack','hit'],'bot':['idle','attack','hit'],'boss':['idle','attack','hit']}
+names={'hero1':['idle','walk','punch','kick','hit','down','jumpkick','special'],'hero2':['idle','walk','punch','kick','hit','down','jumpkick','special'],'insp':['idle','attack','hit'],'final':['idle','attack','hit'],'tax':['idle','attack','hit'],'bur':['idle','attack','hit'],'bot':['idle','attack','hit'],'boss':['idle','attack','hit']}
 meta={}
 # reference scale per character from idle bbox height
 for ch,poses in names.items():
@@ -34,6 +34,7 @@ for ch,poses in names.items():
         c=im.crop(bb);w,h=c.size;c=c.resize((max(1,round(w*s)),max(1,round(h*s))),Image.LANCZOS)
         c.save(f'assets/sprites/{ch}_{p}.png');meta[ch][p]=c.size
     # down frame from hit, rotated backward (heroes face right -> fall left = rotate CCW 80)
+    if ch.startswith('hero'): continue
     hit=Image.open(f'assets/sprites/{ch}_hit.png');ang=80 if ch.startswith('hero') else -80
     d=hit.rotate(ang,expand=True,resample=Image.BICUBIC);d=d.crop(d.getbbox());d.save(f'assets/sprites/{ch}_down.png');meta[ch]['down']=d.size
 json.dump(meta,open('/tmp/meta.json','w'));print(meta)
