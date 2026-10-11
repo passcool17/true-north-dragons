@@ -97,7 +97,7 @@ const EN={
  final:{spr:'final',name:'LE MINISTÈRE',hp:640,spd:.6,dmg:16,pts:20000,sc:1,boss:1,final:1},
  san:{spr:'san',name:'AGENT SANITAIRE',hp:26,spd:.7,dmg:5,pts:150,sc:1},
  qr:{spr:'qr',name:'INSPECTEUR DU PASSEPORT',hp:30,spd:.6,dmg:5,pts:200,sc:1},
- snitch:{spr:'snitch',name:'DÉLATEUR',hp:16,spd:.95,dmg:4,pts:80,sc:1},
+ snitch:{spr:'snitch',name:'MILITANTE',fem:1,hp:16,spd:.95,dmg:4,pts:80,sc:1},
  doc:{spr:'doc',name:'LA DOCTEURE EN CHEF',hp:200,spd:.55,dmg:10,pts:4000,sc:1,boss:1,doc:1},
  pm:{spr:'pm',name:'LE PREMIER MINISTRE SELFIE',hp:250,spd:.7,dmg:11,pts:6000,sc:1,boss:1,pm:1},
  reset:{spr:'reset',name:'LE GRAND RÉINITIALISEUR',hp:230,spd:.45,dmg:11,pts:8000,sc:1,boss:1,reset:1},
@@ -405,7 +405,7 @@ function update(){pollPads();
   {const lv=enemies.filter(e=>!e.dead),bs=lv.find(e=>e.boss);setMusicIntensity(bs?.45+(1-Math.max(0,bs.hp)/bs.max)*.55:Math.min(1,lv.length/5)*.75+(players.some(p=>p.alive&&p.hp<35)?.2:0));}
   if(gameMode==='survie')survUpdate();else{if(camLock==null&&waveIdx<S.waves.length&&camX>=S.waves[waveIdx].at){const w=S.waves[waveIdx];camLock=camX;goT=0;
    const list=w.e.slice();if(!w.boss)for(let i=0;i<D().extra+(players.length>1?1:0)&&list.length<7;i++)list.push(POOLS[stage][(i+waveIdx)%POOLS[stage].length]);else if(diffIdx>0)list.push(POOLS[stage][0]);
-   list.forEach(t=>{if(NEWE.includes(t)&&!SEEN.has(t)){SEEN.add(t);newBan={name:EN[t].name,t:170,spr:EN[t].spr};SFX.stinger&&SFX.stinger();}});list.forEach((t,i)=>{const side=i%2?-1:1,boss=EN[t].boss;const ne=newEnemy(t,camX+(boss?W+30:side>0?W+20+i*12:-20-i*12),boss?178:FLOOR_TOP+12+((i*29)%50));if(t==='para'){ne.x=camX+70+((i*97)%(W-140));ne.alt=150+i*30;}enemies.push(ne);});
+   list.forEach(t=>{if(NEWE.includes(t)&&!SEEN.has(t)){SEEN.add(t);newBan={fem:EN[t].fem,name:EN[t].name,t:170,spr:EN[t].spr};SFX.stinger&&SFX.stinger();}});list.forEach((t,i)=>{const side=i%2?-1:1,boss=EN[t].boss;const ne=newEnemy(t,camX+(boss?W+30:side>0?W+20+i*12:-20-i*12),boss?178:FLOOR_TOP+12+((i*29)%50));if(t==='para'){ne.x=camX+70+((i*97)%(W-140));ne.alt=150+i*30;}enemies.push(ne);});
    if(w.boss){SFX.siren();playSong(bossSong(w.e[0]));bannerT=130;bannerName=EN[w.e[0]].name;}waveIdx++;}
   if(camLock!=null&&enemies.length===0){camLock=null;if(waveIdx>=S.waves.length){state='clear';stateT=0;hazards=[];playSong('jclear');
     const tb=Math.max(0,180-Math.floor(stageTime/60))*20,hb=players.reduce((a,p)=>a+(p.alive?Math.max(0,p.hp):0),0)*10,rank=rankOf(),rb={S:5000,A:2500,B:1000,C:0}[rank];tally={tb,hb:Math.round(hb),rank,rb,shown:0,total:Math.round(tb+hb+rb)};}
@@ -524,7 +524,7 @@ function drawHazard(h){if(h.delay>0)return;const x=h.x-camX;
  X.restore();}
 function portrait(i,x,y){const img=SPR[(players[i]&&players[i].spr)||(i?'hero2':'hero1')].idle;if(!img.complete)return;const sw=img.width*.42,sx=img.width*.29;X.drawImage(img,sx,0,sw,sw,x,y,18,18);}
 function hud(){
- if(newBan&&newBan.t>0){newBan.t--;const a=Math.min(1,newBan.t/15,(170-newBan.t)/10),y=34;X.save();X.globalAlpha=a;panel(W/2-120,y,240,30,{r:5,c1:'#b01818',c2:'#3a0606',bd:'#ffd800'});text('NOUVEL ENNEMI :',W/2,y+4,'#ffd800',7,'center',OUT);text(newBan.name,W/2,y+14,'#fff',9,'center',OUT);const im=SPR[newBan.spr]&&SPR[newBan.spr].idle;if(ok(im)){const ih=24,iw=im.width/im.height*ih;X.drawImage(im,W/2-118,y+3,Math.min(iw,40),ih);}X.restore();}
+ if(newBan&&newBan.t>0){newBan.t--;const a=Math.min(1,newBan.t/15,(170-newBan.t)/10),y=34;X.save();X.globalAlpha=a;panel(W/2-120,y,240,30,{r:5,c1:'#b01818',c2:'#3a0606',bd:'#ffd800'});text(newBan.fem?'NOUVELLE ENNEMIE :':'NOUVEL ENNEMI :',W/2,y+4,'#ffd800',7,'center',OUT);text(newBan.name,W/2,y+14,'#fff',9,'center',OUT);const im=SPR[newBan.spr]&&SPR[newBan.spr].idle;if(ok(im)){const ih=24,iw=im.width/im.height*ih;X.drawImage(im,W/2-118,y+3,Math.min(iw,40),ih);}X.restore();}
  players.forEach((p,i)=>{const x=i?W-92:4,y=4;panel(x,y,88,27,{r:4,c1:'rgba(40,50,110,.95)',c2:'rgba(8,10,30,.95)',bd:i?'#7cf':'#f77',a:.9,studs:false});rr(x+1.5,y+1.5,18,18,3);X.fillStyle='#223';X.fill();X.save();rr(x+1.5,y+1.5,18,18,3);X.clip();portrait(i,x+1.5,y+1.5);X.restore();rr(x+1.5,y+1.5,18,18,3);X.strokeStyle='#ffd800';X.lineWidth=1;X.stroke();
   X.font='bold 6px monospace';X.textAlign='left';X.textBaseline='top';X.fillStyle=i?'#7cf':'#f77';X.fillText((i?'2P ':'1P ')+p.name+'  x'+Math.max(0,p.lives),x+22,y+2);
   {const pw=p.power>0&&tick%8<4,lo=p.hp<=30;bar(x+22,y+11,62,5,Math.max(0,p.hp)/p.maxhp,pw?'#ffd070':lo?'#ff8060':'#fff27a',pw?'#e07000':lo?'#c01010':'#e0a000');}
@@ -772,7 +772,7 @@ function survUpdate(){if(camLock==null)camLock=camX;camX=camLock;const S=STAGES[
  if(--SURV.t<=0){SURV.wave++;SURV.mult=1+Math.floor((SURV.wave-1)/5)*.5;if(SURV.wave>1&&SURV.wave%4===1){SURV.arena++;survArena(SURV.arena);SURV.pend=1;return;}survSpawn();}}
 function survSpawn(){SURV.phase='fight';const n=SURV.wave,boss=n%5===0,list=[];if(boss)list.push(SURVBOSS[(n/5-1)%SURVBOSS.length]);
  const cnt=Math.max(1,Math.min(7,2+Math.floor(n/2)+(players.length>1?1:0))-(boss?3:0)),pool=SURVPOOL.slice(0,Math.min(SURVPOOL.length,4+n));for(let i=0;i<cnt;i++)list.push(pool[(Math.random()*pool.length)|0]);
- list.forEach((t,i)=>{if(NEWE.includes(t)&&!SEEN.has(t)){SEEN.add(t);newBan={name:EN[t].name,t:170,spr:EN[t].spr};}const side=i%2?-1:1,b=EN[t].boss;const e=newEnemy(t,camX+(b?W+30:side>0?W+20+i*12:-20-i*12),b?178:FLOOR_TOP+12+((i*29)%50));if(t==='para'){e.x=camX+70+((i*97)%(W-140));e.alt=150+i*20;}if(b){e.hp*=.6;e.max=e.hp;}e.pts=Math.round(e.pts*SURV.mult);enemies.push(e);});
+ list.forEach((t,i)=>{if(NEWE.includes(t)&&!SEEN.has(t)){SEEN.add(t);newBan={fem:EN[t].fem,name:EN[t].name,t:170,spr:EN[t].spr};}const side=i%2?-1:1,b=EN[t].boss;const e=newEnemy(t,camX+(b?W+30:side>0?W+20+i*12:-20-i*12),b?178:FLOOR_TOP+12+((i*29)%50));if(t==='para'){e.x=camX+70+((i*97)%(W-140));e.alt=150+i*20;}if(b){e.hp*=.6;e.max=e.hp;}e.pts=Math.round(e.pts*SURV.mult);enemies.push(e);});
  if(boss){SFX.siren();playSong(bossSong(list[0]));bannerT=130;bannerName='MINI-BOSS · '+EN[list[0]].name;}
  floaters.push({x:camX+W/2,y:64,t:80,s:'VAGUE '+n+(SURV.mult>1?'   SCORE ×'+SURV.mult:''),c:'#ffd800'});SFX.go();}
 // ===== COMIC CUTSCENES & STORY CARDS =====
