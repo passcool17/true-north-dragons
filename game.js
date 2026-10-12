@@ -79,7 +79,7 @@ function leafBig(x,y,s,c){X.fillStyle=c;const m=["....#....","...###...","#..###
 const DIFFS=[
  {name:'NORMAL',tokens:2,hp:1,dmg:.68,cd:.85,wind:.85,extra:1,lives:3,cont:4,heal:.75,block:.06,col:'#7f7'},
  {name:'DIFFICILE',tokens:2,hp:1.7,dmg:1.6,cd:.55,wind:.72,extra:2,lives:2,cont:1,heal:.4,block:.12,col:'#fc4'},
- {name:'CAUCHEMAR',tokens:3,hp:2.1,dmg:2.0,cd:.42,wind:.62,extra:3,lives:1,cont:0,heal:.25,block:.2,col:'#f44'}];
+ {name:'CAUCHEMAR',tokens:3,hp:2.0,dmg:1.7,cd:.42,wind:.62,extra:3,lives:2,cont:0,heal:.25,block:.2,col:'#f44'}];
 let diffIdx=0;const D=()=>DIFFS[diffIdx];
 const EN={
  taxman:{spr:'tax',name:'PERCEPTEUR DE TAXE CARBONE',hp:30,spd:.65,dmg:6,pts:100,sc:1},
@@ -332,7 +332,7 @@ function updateEnemy(e){
    if(escaped){e.hurtT=30;e.flash=10;e.vx=-e.face*2;h.inv=40;floaters.push({x:h.x,y:h.y-90,t:30,s:'LIBRE!',c:'#7f7'});}else{h.inv=0;h.hurtT=0;hurtPlayer(h,e.dmg,e.face,true);}}return;}
  // flanking: alternate sides so enemies surround instead of queueing
  if(--e.think<=0){e.think=40+Math.random()*40;const left=enemies.filter(o=>!o.dead&&o!==e&&o.x<t.x).length,right=enemies.filter(o=>!o.dead&&o!==e&&o.x>=t.x).length;e.side=left<right?-1:left>right?1:(e.x<t.x?-1:1);e.ty=(Math.random()-.5)*16;}
- const pref=e.type==='taxman'?90:e.type==='mega'?130:e.type==='qr'?110:44;const gx=t.x+e.side*pref*sc,gy=t.y+e.ty*(e.type==='taxman'||e.type==='mega'||e.type==='qr'?0:1);const dx=gx-e.x,dy=gy-e.y;e.face=t.x<e.x?-1:1;
+ const pref=e.type==='taxman'?90:e.type==='mega'?130:e.type==='qr'?110:44;if(camLock!=null){const r=pref*sc;if(e.side>0&&t.x+r>camX+W-16&&t.x-r>camX+16)e.side=-1;else if(e.side<0&&t.x-r<camX+16&&t.x+r<camX+W-16)e.side=1;}const gx=t.x+e.side*pref*sc,gy=t.y+e.ty*(e.type==='taxman'||e.type==='mega'||e.type==='qr'?0:1);const dx=gx-e.x,dy=gy-e.y;e.face=t.x<e.x?-1:1;
  for(const o of enemies)if(o!==e&&!o.dead&&Math.abs(o.x-e.x)<16&&Math.abs(o.y-e.y)<8){e.y+=o.y<e.y?.5:-.5;}
  if(Math.abs(dx)>3||Math.abs(dy)>3){e.x+=Math.sign(dx)*Math.min(Math.abs(dx),e.spd);e.y+=Math.sign(dy)*Math.min(Math.abs(dy),e.spd*.7);e.pose='walk';}else e.pose='idle';
  e.y=Math.max(FLOOR_TOP+6,Math.min(FLOOR_BOT,e.y));if(camLock!=null){if(e.x<camX+14)e.x+=1;if(e.x>camX+W-14)e.x-=1;}
