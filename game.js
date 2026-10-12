@@ -449,7 +449,7 @@ function stepWorld(){
    else{score+=500;STATS.loon++;SFX.coin(it.x);floaters.push({x:it.x,y:it.y-30,t:40,s:'+500',c:'#ffd800'})}
    if(it.k!=='loonie')score+=50;break;}}
  items=items.filter(i=>!i.taken);
- fx.forEach(f=>{f.x+=f.vx;f.y+=f.vy;if(f.grav)f.vy+=.2;if(f.vr)f.rot+=f.vr;if(f.floor&&f.y>f.floor&&f.vy>0){f.y=f.floor;f.vy*=-.35;f.vx*=.6;f.vr*=.5;}f.t--;if(f.smoke){f.s+=.25;f.vx*=.97;}});fx=fx.filter(f=>f.t>0);if(fx.length>220)fx.splice(0,fx.length-220);floaters.forEach(f=>{f.t--;if(!f.fixed)f.y-=.4});floaters=floaters.filter(f=>f.t>0);
+ fx.forEach(f=>{f.x+=f.vx;f.y+=f.vy;if(f.grav)f.vy+=.2;if(f.vr)f.rot+=f.vr;if(f.floor&&f.y>f.floor&&f.vy>0){f.y=f.floor;f.vy*=-.35;f.vx*=.6;f.vr*=.5;}f.t--;if(f.smoke){f.s+=.25;f.vx*=.97;}});fx=fx.filter(f=>f.t>0);if(fx.length>220)fx.splice(0,fx.length-220);floaters.forEach(f=>{f.t--;if(!f.fixed)f.y-=.4});floaters=floaters.filter(f=>f.t>0);{const loose=floaters.filter(f=>!f.fixed);if(loose.length>7){const drop=new Set(loose.slice(0,loose.length-7));floaters=floaters.filter(f=>!drop.has(f));}}
  if(shake>0)shake--;
 }
 const VMSG='VICTOIRE ! Le bouton rouge est brisé.\n\nLes confinements sont levés, les comptes\ndégelés, la planche à billets éteinte,\nla Coalition Globale dissoute.\nLe Canada respire enfin : la paix règne\nd\'un océan à l\'autre !\n\nLes double-doubles sont offerts !';
@@ -542,7 +542,7 @@ function hud(){
  const b=enemies.find(e=>e.boss&&!e.dead);if(b){panel(W/2-86,H-22,172,19,{r:4,c1:'rgba(90,10,10,.9)',c2:'rgba(20,0,0,.9)',bd:'#f66',a:.85,studs:false});X.font='bold 7px monospace';X.textAlign='center';X.fillStyle='#fdd';X.fillText(b.name,W/2,H-20);{const c=b.invT>0?['#ccf','#66f']:b.phase>=3?['#f8f','#a0a']:b.phase===2?['#fc6','#c60']:['#f66','#900'];bar(W/2-80,H-11,160,5,Math.max(0,b.hp)/b.max,c[0],c[1],'#200');}}
  else{const e=enemies.find(e=>e.flash>0);if(e){X.font='bold 6px monospace';X.fillStyle='#ddd';X.fillText(e.name,W/2,22);}}
  if(goT>0&&(tick>>4)%2){text('GO',W-56,82,'#ffd800',16,'left',OUT);X.fillStyle='#ffd800';X.beginPath();X.moveTo(W-30,82);X.lineTo(W-14,92);X.lineTo(W-30,102);X.fill();}
- floaters.forEach(f=>{if(f.blink&&(tick>>3)%2)return;text(f.s,f.fixed?W/2:Math.max(f.s.length*2.6+4,Math.min(W-f.s.length*2.6-4,f.x-camX)),f.y,f.c,f.fixed?10:f.small?7:8,'center')});
+ {const placed=[];floaters.forEach(f=>{if(f.blink&&(tick>>3)%2)return;const sz=f.fixed?10:f.small?7:8,hw=f.s.length*sz*.33+3;let x=f.fixed?W/2:Math.max(hw+2,Math.min(W-hw-2,f.x-camX)),y=f.y;if(y<sz+2)y=sz+2;for(let k=0;k<6;k++){const o=placed.find(q=>Math.abs(q.x-x)<q.hw+hw&&Math.abs(q.y-y)<sz+1);if(!o)break;y=o.y+sz+2;}placed.push({x,y,hw});const a=X.globalAlpha;if(!f.fixed&&f.t<14)X.globalAlpha=a*Math.max(0,f.t/14);text(f.s,x,y,f.c,sz,'center');X.globalAlpha=a;});}
  if(paused){X.fillStyle='rgba(0,0,0,.6)';X.fillRect(0,0,W,H);panel(W/2-110,18,220,166,{r:6});text('PAUSE',W/2,26,'#ffd800',16,'center',OUT);PBTN=[];
   ['REPRENDRE','RECOMMENCER','MENU'].forEach((n,i)=>{const y=58+i*18,sel=pauseSel===i;panel(W/2-60,y-3,120,15,{r:4,c1:sel?'#e0302a':'rgba(255,255,255,.14)',c2:sel?'#7a0808':'rgba(255,255,255,.04)',bd:sel?'#ffd800':'rgba(255,255,255,.3)',a:1,studs:false});text(n,W/2,y,sel?'#ffd800':'#ddd',9,'center');PBTN.push({x:W/2-60,y:y-3,w:120,h:15,f:()=>{pauseSel=i;pauseAct(i);}});});
   [['MUSIQUE','music'],['EFFETS','sfx']].forEach(([n,k],i)=>{const y=122+i*20,sel=pauseSel===3+i;text(n,96,y,sel?'#ffd800':'#aaa',8);
@@ -641,7 +641,7 @@ function loop(now){requestAnimationFrame(loop);acc+=Math.min(100,now-last);last=
  try{X.setTransform(2,0,0,2,0,0);X.imageSmoothingEnabled=true;X.filter='none';X.globalAlpha=1;render();}catch(e){logErr('render',e);try{X.setTransform(2,0,0,2,0,0);X.filter='none';X.globalAlpha=1;}catch(_){}}}
 requestAnimationFrame(loop);
 window.__game={get state(){return state},get curStage(){return stage},startGame,get players(){return players},get enemies(){return enemies},get camX(){return camX},keys,pressed,
- setDiff(i){diffIdx=i;},DIFFS,get hazards(){return hazards},get breakables(){return breakables},get score(){return score},get contLeft(){return contLeft},
+ setDiff(i){diffIdx=i;},DIFFS,get hazards(){return hazards},get floaters(){return floaters},get breakables(){return breakables},get score(){return score},get contLeft(){return contLeft},
  char(i){charSel=i;SEL=[HEROES[i]];},sel(a){SEL=a;SELS=null;},selS(o){SELS=o},setEntry(o){entry=o},setCut(n){goStage(n)},hs(){return HS},surv(){return SURV},mode(m){gameMode=m},cutT(){return cut},newEnemy,get dbg(){return {paused,bannerT,hitstop,slowmo,camLock,simMode}},get projs(){return projs},get errs(){return ERRLOG},get bonusM(){return bonusM},bonus(){if(!players.length)startGame(false);stage=3;startBonus();},cam(x){camX=x;camLock=x;},get NUKE(){return NUKE},get items(){return items},get STATS(){return STATS},
  stage(n){if(!players.length)startGame(false);startStage(Math.max(0,Math.min(STAGES.length-1,n-1)));state='play';},
  boss(){const S=STAGES[stage];state='play';enemies=[];camLock=null;waveIdx=S.waves.length-1;camX=S.waves[waveIdx].at;players.forEach((p,i)=>{p.x=camX+90+i*20;p.y=178;p.inv=0;p.hurtT=0;p.alive=true;});},
