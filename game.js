@@ -656,7 +656,7 @@ const NUKE={broken:0};
 function summon(list){list.slice(0,6).forEach((k,i)=>{if(enemies.length>40)return;const e=newEnemy(k,camX+(i%2?-20:W+20),FLOOR_TOP+14+((i*31)%44));if(k==='para'){e.x=camX+80+((i*110)%(W-160));e.alt=150+i*20;}enemies.push(e);});}
 function say(s,c='#f44',t=120){floaters.push({x:camX+W/2,y:66,t,s,c,fixed:1});}
 function aiNew2(e,t,live){const adx=Math.abs(t.x-e.x),ady=Math.abs(t.y-e.y),tok=!(attackers()>=D().tokens);
- if(e.type==='para'&&e.alt>0){e.alt=Math.max(0,e.alt-1.3);e.pose='idle';e.x+=Math.sign(t.x-e.x)*.4+Math.sin(e.anim*.05)*.3;e.x=Math.max(camX+20,Math.min(camX+W-20,e.x));if(e.alt===0){SFX.land(e.x);e.cd=30;for(let i=0;i<6;i++)fx.push({x:e.x+(Math.random()-.5)*30,y:e.y-4,vx:(Math.random()-.5),vy:-.4,t:20,c:'rgba(120,110,90,.6)',s:8,smoke:1});}return true;}
+ if(e.type==='para'&&e.alt>0){e.alt=Math.max(0,e.alt-(e.y-e.alt-138<-4?4:1.3));e.pose='idle';e.x+=Math.sign(t.x-e.x)*.4+Math.sin(e.anim*.05)*.3;e.x=Math.max(camX+20,Math.min(camX+W-20,e.x));if(e.alt===0){SFX.land(e.x);e.cd=30;for(let i=0;i<6;i++)fx.push({x:e.x+(Math.random()-.5)*30,y:e.y-4,vx:(Math.random()-.5),vy:-.4,t:20,c:'rgba(120,110,90,.6)',s:8,smoke:1});}return true;}
  if(e.type==='qr'){
   if(e.las>0){e.las--;e.pose=e.las<16?'attack':'idle';e.y=e.ly;if(e.las===14)SFX.laser(e.x);
    if(e.las<14&&e.las>2)hitPlayers(e,p=>{if(Math.abs(p.y-e.ly)<9&&p.z<16&&(p.x-e.x)*e.face>0&&!(p.frz>0)&&p.inv<=0&&p.hurtT<=0){if(hurtPlayer(p,e.dmg*.6,e.face,false)){p.frz=45;p.frzK='qr';floaters.push({x:p.x,y:p.y-100,t:40,s:'PASSEPORT REQUIS!',c:'#7f7',small:1});}}});
